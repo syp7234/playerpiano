@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Player Piano</title>
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="spa.css">
+    <!--  -->
+</head>
+<body>
+<script>
+    let musicLibrary = '';
+    let currentLibrary = '';
+</script>
+<main>
+    <div class="page active" id="menu">
+        <div class="row">
+            <div class="leftright">
+                    <button class ="card nav-link" id ="libraryButton" data-target="library">
+                        <div class="text-center">LIBRARY</div>
+                        <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+                             viewBox="0 0 1600.000000 1600.000000"
+                             preserveAspectRatio="xMidYMin meet">
+
+                            <g transform="translate(0.000000,1600.000000) scale(0.100000,-0.100000)"
+                               fill="#a2a436" >
+                                <path class="line1" stroke="#a2a436", stroke-width ="8" d="M3444 15360 c-64 -9 -146 -53 -186 -99 -17 -19 -43 -60 -57 -91 l-26
+                            -55 -3 -5587 -2 -5588 320 0 320 0 0 5395 0 5395 5080 0 5080 0 -3 -6112 -2
+                            -6113 -23 -99 c-120 -519 -520 -902 -1036 -991 -315 -54 -675 28 -935 213
+                            -243 173 -427 439 -502 727 -31 117 -32 128 -38 415 -7 284 -8 297 -31 345
+                            -34 70 -108 139 -175 164 l-56 21 -4819 0 -4819 0 -55 -20 c-72 -27 -139 -88
+                            -173 -158 -28 -57 -28 -58 -31 -292 -5 -344 18 -523 99 -764 198 -594 681
+                            -1057 1285 -1230 67 -19 168 -43 225 -53 99 -17 339 -18 4979 -21 3392 -2
+                            4911 0 4995 8 451 40 862 231 1180 547 253 251 420 544 511 892 58 223 54
+                            -241 54 6610 0 5487 -2 6294 -15 6330 -32 92 -102 163 -197 199 -40 16 -450
+                            17 -5468 18 -2984 1 -5448 -2 -5476 -6z m7346 -12697 c2 -72 25 -272 41 -353
+                            58 -290 211 -604 408 -838 l61 -72 -4124 0 c-4571 0 -4191 -6 -4406 66 -479
+                            160 -830 610 -857 1097 l-6 107 4442 0 c2442 0 4441 -3 4441 -7z"/>
+                                <path class="line2" stroke="#a2a436", stroke-width ="8" d="M11445 12818 c-54 -10 -2805 -578 -3523 -727 -238 -50 -452 -99 -475
+                            -109 -51 -24 -100 -73 -124 -127 -17 -38 -18 -150 -23 -2285 -6 -2513 2 -2282
+                            -79 -2352 -82 -70 -204 -94 -551 -107 -253 -10 -363 -28 -531 -87 -192 -67
+                            -343 -159 -474 -288 -132 -131 -206 -256 -246 -416 -19 -73 -21 -103 -16 -220
+                            13 -318 134 -553 362 -705 197 -131 416 -185 752 -185 330 0 606 62 856 192
+                            247 129 449 348 531 576 l31 87 5 2130 c5 2107 5 2130 25 2164 11 19 31 42 45
+                            52 24 18 470 130 2010 505 757 184 893 215 955 217 57 1 88 -13 113 -50 16
+                            -26 17 -110 17 -1418 l0 -1390 -23 -43 c-61 -115 -197 -154 -587 -167 -224 -8
+                            -376 -31 -522 -80 -324 -108 -575 -314 -692 -566 -53 -116 -71 -195 -71 -321
+                            0 -497 281 -822 788 -914 122 -22 393 -29 533 -15 402 42 716 175 947 403 93
+                            92 152 173 201 280 71 154 66 -93 66 2968 0 2630 -1 2778 -18 2832 -39 128
+                            -145 190 -282 166z"/>
+                            </g>
+                        </svg>
+                    </button>
+            </div>
+                <div class="leftright">
+                    <button class="card nav-link" id="recordButton" data-target="record">
+                        <div class="text-center">RECORD</div>
+                        <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+                             width="80%" height="80%" viewBox="0 0 920.000000 1060.000000"
+                             preserveAspectRatio="xMidYMid meet">
+
+                            <g transform="translate(0.000000,1060.000000) scale(0.100000,-0.100000)"
+                               fill="#941b25" stroke="none">
+                                <path d="M4335 10173 c-16 -2 -75 -15 -130 -29 -448 -112 -841 -428 -1050
+                                -844 -96 -192 -146 -349 -165 -525 -9 -89 -30 -478 -30 -577 l0 -38 410 0 410
+                                0 -2 -207 -3 -208 -409 -3 -409 -2 7 -188 c4 -103 8 -188 9 -189 1 0 183 -4
+                                405 -8 l402 -8 0 -207 0 -207 -402 -8 c-222 -4 -404 -8 -405 -8 -1 -1 -5 -86
+                                -9 -189 l-7 -188 409 -2 409 -3 3 -207 2 -208 -118 0 c-65 0 -248 -3 -407 -7
+                                l-288 -6 6 -461 c8 -513 15 -619 53 -751 74 -258 203 -493 370 -674 233 -253
+                                483 -403 823 -494 116 -31 117 -31 381 -31 l265 0 116 31 c320 87 559 230 788
+                                469 62 65 138 157 170 205 118 175 230 444 251 600 15 114 29 401 36 770 l7
+                                336 -69 6 c-38 4 -221 7 -407 7 l-337 0 2 208 3 207 403 3 402 2 0 195 0 195
+                                -405 0 -405 0 0 210 0 210 405 0 405 0 0 195 0 195 -402 2 -403 3 -3 208 -2
+                                207 118 0 c65 0 248 3 407 7 l288 6 -7 199 c-16 498 -65 717 -225 1002 -109
+                                196 -305 407 -492 533 -169 112 -319 179 -529 235 -112 30 -121 31 -365 34
+                                -137 1 -263 0 -280 -3z"/>
+                                <path d="M1643 6095 c-121 -34 -214 -109 -265 -213 l-33 -67 2 -265 c2 -348
+                                19 -665 44 -818 73 -442 306 -967 606 -1364 283 -374 625 -673 1030 -899 293
+                                -164 564 -264 948 -349 105 -23 196 -47 203 -52 9 -8 12 -102 10 -432 l-3
+                                -421 -1129 -7 c-1123 -7 -1397 -15 -1493 -43 -64 -19 -141 -98 -183 -187 -27
+                                -56 -30 -73 -30 -158 0 -88 3 -101 34 -165 42 -88 99 -153 166 -189 42 -23 70
+                                -29 153 -36 157 -13 3429 -21 4727 -12 l1155 8 55 35 c72 47 132 115 175 202
+                                31 62 35 79 35 147 0 71 -4 85 -40 158 -45 89 -112 165 -165 188 -65 27 -221
+                                34 -1030 44 -445 5 -991 13 -1212 16 l-403 6 0 424 0 424 23 5 c12 3 85 19
+                                162 35 718 156 1209 422 1715 930 437 438 697 890 855 1485 62 233 79 389 94
+                                830 12 335 5 441 -33 519 -36 74 -128 163 -206 200 -57 27 -76 31 -150 31 -77
+                                0 -92 -3 -162 -37 -87 -41 -160 -104 -189 -160 -25 -49 -36 -143 -49 -433 -25
+                                -543 -68 -804 -175 -1067 -306 -750 -930 -1298 -1694 -1487 -246 -61 -283 -65
+                                -591 -65 -316 0 -383 8 -617 69 -545 143 -1020 463 -1358 916 -190 255 -345
+                                587 -419 899 -42 176 -55 302 -66 640 -12 366 -20 441 -55 510 -34 67 -115
+                                144 -191 181 -77 38 -170 47 -251 24z"/>
+                            </g>
+                        </svg>
+                    </button>
+                </div>
+            <div class="bottom">
+                <button class ="cardS nav-link" id = calibrationButton data-target="calibration">
+                    <div id="calText">CALIBRATION</div>
+                    <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+                         width="80%" height="80%" viewBox="0 0 1756.000000 1420.000000"
+                         preserveAspectRatio="xMidYMid meet">
+
+                        <g transform="translate(0.000000,1420.000000) scale(0.100000,-0.100000)"
+                           fill="#114989" stroke="none">
+                            <path d="M3610 13965 c-228 -51 -417 -152 -576 -310 -134 -132 -242 -316 -284
+                                    -481 -22 -86 -40 -304 -40 -497 0 -93 -3 -129 -12 -132 -7 -2 -395 -7 -863
+                                    -12 l-850 -8 -76 -38 c-89 -44 -151 -100 -204 -183 -52 -81 -59 -111 -60 -249
+                                    0 -115 2 -123 32 -188 46 -97 136 -188 233 -235 l75 -36 245 -7 c135 -4 521
+                                    -8 858 -8 481 -1 614 -4 617 -13 2 -7 8 -134 14 -283 11 -304 18 -346 95 -509
+                                    63 -134 132 -231 236 -329 149 -140 280 -216 480 -276 l85 -25 940 -4 c585 -2
+                                    978 1 1040 7 361 37 700 283 860 624 75 162 86 216 99 519 6 146 15 270 19
+                                    275 5 4 2264 11 5020 14 4996 6 5012 6 5074 26 34 12 82 32 105 46 67 39 155
+                                    138 191 214 31 65 32 73 32 193 0 122 -1 127 -34 195 -46 94 -142 190 -236
+                                    236 l-70 34 -5040 8 c-2772 5 -5043 12 -5046 15 -4 4 -11 131 -17 282 -9 246
+                                    -13 283 -35 355 -114 373 -400 652 -779 762 l-93 27 -985 3 c-821 1 -996 0
+                                    -1050 -12z m1938 -972 c24 -23 44 -54 51 -78 16 -57 15 -1669 0 -1716 -7 -19
+                                    -21 -45 -33 -58 -47 -52 -23 -51 -913 -51 -455 1 -848 5 -873 9 -32 7 -54 19
+                                    -77 45 l-33 36 0 880 0 879 31 36 c17 19 45 39 63 44 17 5 405 10 888 10 l857
+                                    1 39 -37z"/>
+                            <path d="M11997 9274 c-373 -68 -689 -318 -827 -655 -68 -163 -71 -183 -84
+                                    -481 -6 -152 -15 -280 -19 -285 -5 -4 -2271 -10 -5035 -13 l-5027 -5 -60 -24
+                                    c-77 -31 -128 -66 -187 -128 -80 -86 -118 -189 -118 -318 0 -183 102 -345 267
+                                    -426 l68 -34 4985 -8 c2742 -4 5013 -10 5048 -13 53 -5 63 -9 66 -27 3 -12 9
+                                    -137 14 -277 l9 -255 37 -110 c124 -369 400 -631 776 -738 74 -21 90 -22 1030
+                                    -25 639 -2 986 0 1048 8 342 39 675 285 833 615 74 155 89 220 99 440 5 105 9
+                                    225 10 267 0 53 4 81 14 91 13 12 139 15 843 19 823 5 828 5 892 27 124 43
+                                    223 131 279 249 36 75 37 79 37 197 0 118 -1 122 -37 197 -58 122 -141 201
+                                    -263 249 l-60 23 -836 4 c-459 2 -841 7 -849 12 -11 7 -16 56 -21 212 -11 291
+                                    -16 342 -45 436 -56 186 -144 332 -280 468 -139 139 -299 231 -505 291 l-94
+                                    27 -965 2 c-804 2 -978 0 -1043 -12z m1836 -943 c58 -6 72 -12 100 -39 l32
+                                    -32 3 -878 c3 -976 8 -912 -65 -962 l-37 -25 -863 -3 -863 -2 -45 41 c-27 25
+                                    -49 56 -55 78 -12 44 -13 1645 -1 1709 10 50 51 98 96 111 37 11 1603 13 1698
+                                    2z"/>
+                            <path d="M6825 4240 c-251 -6 -288 -8 -354 -29 -377 -113 -666 -414 -765 -792
+                                    -25 -97 -46 -335 -46 -524 l0 -85 -1532 -1 c-843 -1 -1895 -4 -2339 -8 l-805
+                                    -6 -76 -38 c-100 -49 -176 -125 -225 -225 -38 -76 -38 -77 -38 -201 0 -122 1
+                                    -128 34 -199 43 -91 138 -185 238 -234 l68 -33 1340 -6 c737 -4 1789 -7 2338
+                                    -8 l997 -1 0 -119 c0 -176 18 -363 45 -477 60 -250 189 -452 389 -609 109 -85
+                                    204 -135 356 -187 l125 -43 935 -3 c634 -2 970 0 1043 8 441 45 829 388 938
+                                    830 21 86 39 300 39 478 l0 122 1348 1 c741 1 2344 4 3562 8 l2215 6 70 34
+                                    c94 46 190 142 236 236 33 68 34 73 34 195 0 122 -1 127 -34 195 -45 92 -141
+                                    188 -235 235 l-70 35 -1280 6 c-705 4 -2308 7 -3563 8 l-2283 1 0 93 c0 195
+                                    -20 424 -45 522 -22 88 -115 306 -140 330 -6 6 -30 35 -53 65 -55 75 -173 187
+                                    -248 238 -172 115 -331 170 -534 183 -150 9 -1247 8 -1685 -1z m1645 -951 c50
+                                    -23 81 -61 91 -111 10 -55 10 -1627 0 -1691 -6 -36 -17 -58 -47 -88 l-38 -39
+                                    -878 0 -879 0 -43 44 c-34 34 -46 54 -51 87 -3 24 -5 415 -3 869 3 804 4 826
+                                    23 859 28 48 67 74 123 82 26 4 412 6 857 5 724 -1 814 -3 845 -17z"/>
+                        </g>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <button class="helpButton">?</button>
+    </div>
+    <div class="page" id="library">
+        <div id="libraryDivider">
+            <div id="libraryFilter">
+                <button class="filterButton shown" id="allSongs">
+                    <div class="textFilterButton">ALL SONGS</div>
+                </button>
+                <button class="filterButton" id="handSplitOnly">
+                    <div class="textFilterButton">HANDS SPLIT SUPPORTED ONLY</div>
+                </button>
+                <button class="filterButton" id="recorded">
+                    <div class="textFilterButton">RECORDED ONLY</div>
+                </button>
+                <button class="backButton nav-link" id="libraryBack" data-target="menu">
+                    <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                         fill ="#ffffff" viewBox="0 0 219.151 219.151" style="enable-background:new 0 0 219.151 219.151;" xml:space="preserve">
+                    <g>
+                        <path d="M109.576,219.151c60.419,0,109.573-49.156,109.573-109.576C219.149,49.156,169.995,0,109.576,0S0.002,49.156,0.002,109.575
+                            C0.002,169.995,49.157,219.151,109.576,219.151z M109.576,15c52.148,0,94.573,42.426,94.574,94.575
+                            c0,52.149-42.425,94.575-94.574,94.576c-52.148-0.001-94.573-42.427-94.573-94.577C15.003,57.427,57.428,15,109.576,15z"/>
+                        <path d="M94.861,156.507c2.929,2.928,7.678,2.927,10.606,0c2.93-2.93,2.93-7.678-0.001-10.608l-28.82-28.819l83.457-0.008
+                            c4.142-0.001,7.499-3.358,7.499-7.502c-0.001-4.142-3.358-7.498-7.5-7.498l-83.46,0.008l28.827-28.825
+                            c2.929-2.929,2.929-7.679,0-10.607c-1.465-1.464-3.384-2.197-5.304-2.197c-1.919,0-3.838,0.733-5.303,2.196l-41.629,41.628
+                            c-1.407,1.406-2.197,3.313-2.197,5.303c0.001,1.99,0.791,3.896,2.198,5.305L94.861,156.507z"/>
+                    </g>
+                    </svg>
+                </button>
+                <button class="startButton" id="libraryStart">START</button>
+            </div>
+            <div id="libraryList">
+                <div class="listRow" id="head">
+                    <div class="listColumn doubleSpace">
+                        <button class="headButton filter" id="title">TITLE</button>
+                    </div>
+                    <div class="listColumn doubleSpace">
+                        <button class="headButton" id="composer">COMPOSER</button>
+                    </div>
+                    <div class="listColumn lessSpace">
+                        <button class="headButton" id="durations">DURATIONS</button>
+                    </div>
+                    <div class="listColumn lessSpace">
+                        <button class="headButton" id="handSplit">HANDS SPLIT</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="page" id="play">
+        play
+    </div>
+    <div class="page" id="record">
+        record
+    </div>
+    <div class="page" id="calibration">
+        calibration
+    </div>
+
+    <div class="page" id="home">
+        <h1>Home</h1>
+        <ol>
+            <li><a href="#" data-target="home" class="nav-link">HOME</a></li>
+            <li><a href="#" data-target="list" class="nav-link">LIST</a></li>
+            <li><a href="#" data-target="detail" class="nav-link">DETAIL</a></li>
+        </ol>
+    </div>
+
+    <div class="page" id="list">
+        <h1>List</h1>
+        <ol>
+            <li><a href="#" data-target="home" class="nav-link">HOME</a></li>
+            <li><a href="#" data-target="list" class="nav-link">LIST</a></li>
+            <li><a href="#" data-target="detail" class="nav-link">DETAIL</a></li>
+        </ol>
+    </div>
+
+    <div class="page" id="detail">
+        <h1>Detail</h1>
+        <ol>
+            <li><a href="#" data-target="home" class="nav-link">HOME</a></li>
+            <li><a href="#" data-target="list" class="nav-link">LIST</a></li>
+            <li><a href="#" data-target="detail" class="nav-link">DETAIL</a></li>
+        </ol>
+    </div>
+
+</main>
+<script src="spa.js"></script>
+<script src="/jsmodules/socket.io.js"></script>
+<script src="/jsmodules/jquery.js"></script>
+<script>
+
+    let libraryLoaded = false;
+    let orderTracker = 'title';
+    let orderDirection = 'normal';
+    var socket = io();
+    document.querySelector('.shown').style.backgroundColor = "#6f6f6f";
+    document.querySelector('.shown').style.textShadow = "0px 5px 10px #000000";
+    document.getElementById('title').style.backgroundColor = "#5f5f5f";
+    document.querySelectorAll('.filterButton').forEach((button)=>{
+        button.addEventListener('click', changeList);
+    });
+
+    document.getElementById('libraryButton').addEventListener("click",loadList);
+    document.querySelectorAll('.headButton').forEach((button)=>{
+        button.addEventListener('click', changeOrder);
+    });
+
+    function changeOrder(ev){
+        let clickID = ev.currentTarget.getAttribute('id');
+        document.querySelector('.filter').style.backgroundColor = "#252525";
+        document.querySelector('.filter').classList.remove(('filter'));
+        document.getElementById(clickID).classList.add(('filter'));
+        document.querySelector('.filter').style.backgroundColor = "#5f5f5f";
+        switch(clickID){
+            case "title":
+                if (orderDirection === 'normal'){
+                    console.log("here");
+                    currentLibrary.sort(function (a,b) {
+                        return compareStringsReverse(a.title,b.title)
+                    });
+                    orderDirection = "reverse";
+                }else if(orderDirection === 'reverse'){
+                    currentLibrary.sort(function (a,b) {
+                        return compareStrings(a.title,b.title)
+                    });
+                    orderDirection = "normal";
+                }
+                break;
+            case "composer":
+                if (orderDirection === 'normal'){
+                    currentLibrary.sort(function (a,b) {
+                        return compareStringsReverse(a.composer,b.composer)
+                    });
+                    orderDirection = "reverse";
+                }else if(orderDirection === 'reverse'){
+                    currentLibrary.sort(function (a,b) {
+                        return compareStrings(a.composer,b.composer)
+                    });
+                    orderDirection = "normal";
+                }
+                break;
+            case "durations":
+                if (orderDirection === 'normal'){
+                    console.log("here");
+                    currentLibrary.sort(function (a,b) {
+                        return compareStringsReverse(a.duration,b.duration)
+                    });
+                    orderDirection = "reverse";
+                }else if(orderDirection === 'reverse'){
+                    currentLibrary.sort(function (a,b) {
+                        return compareStrings(a.duration,b.duration)
+                    });
+                    orderDirection = "normal";
+                }
+                break;
+            case "handSplit":
+                if (orderDirection === 'normal'){
+                    console.log("here");
+                    currentLibrary.sort(function (a,b) {
+                        return compareBooleansReverse(a.handSplit,b.handSplit)
+                    });
+                    orderDirection = "reverse";
+                }else if(orderDirection === 'reverse'){
+                    currentLibrary.sort(function (a,b) {
+                        return compareBooleans(a.handSplit,b.handSplit)
+                    });
+                    orderDirection = "normal";
+                }
+                break;
+        }
+        displayLibrary(currentLibrary);
+    }
+    function loadList(ev){
+        if (libraryLoaded === false){
+            socket.emit('request library', 'now');
+            socket.on('send library', function (data) {
+                musicLibrary = data;
+                console.log(data.sort(function(a,b){
+                    return compareStrings(a.title,b.title);
+                }));
+                changeFilter(data,"allSongs");
+            });
+            libraryLoaded = true;
+        }
+    }
+    function changeFilter(musicLibrary, filterType){
+        let indexToDelete = [];
+        switch(filterType){
+            case "allSongs":
+                currentLibrary = JSON.parse(JSON.stringify(musicLibrary));
+                break;
+            case "handSplitOnly":
+                currentLibrary = JSON.parse(JSON.stringify(musicLibrary));
+                for (i = 0; i < currentLibrary.length; i++){
+                    if (currentLibrary[i].handSplit == false){
+                        indexToDelete.push(i);
+                    }
+                }
+                indexToDelete.reverse();
+                console.log(indexToDelete);
+                for (i = 0; i < indexToDelete.length; i++){
+                    currentLibrary.splice([indexToDelete[i]],1);
+                }
+                console.log(currentLibrary);
+                indexToDelete = [];
+                break;
+            case "recorded":
+                currentLibrary = JSON.parse(JSON.stringify(musicLibrary));
+                for (i = 0; i < currentLibrary.length; i++){
+                    if (currentLibrary[i].type != "record"){
+                        indexToDelete.push(i);
+                    }
+                }
+                indexToDelete.reverse();
+                for (i = 0; i < indexToDelete.length; i++){
+                    currentLibrary.splice([indexToDelete[i]],1);
+                }
+                indexToDelete = [];
+                break;
+        }
+        currentLibrary.sort(function (a,b) {
+            return compareStrings(a.title,b.title);
+        });
+        orderDirection = "normal";
+
+        displayLibrary(currentLibrary);
+    }
+    function displayLibrary(currentLibrary){
+        let element = document.getElementById('libraryList');
+        let oddeven = "odd";
+        let checkMark = '';
+        $('.removable').remove();
+        console.log('inside displayLibrary');
+        console.log(currentLibrary);
+        for (i = 0; i < currentLibrary.length; i++){
+            if (i%2 === 0){
+                oddeven = "odd";
+            } else {
+                oddeven = "even";
+            }
+            if (currentLibrary[i].handSplit){
+                checkMark = '<img src="images/check-mark-button.svg" style="max-width:25px;max-height:25px;margin:0 auto"/>'
+            }else{
+                checkMark = '';
+            }
+            element.insertAdjacentHTML('beforeend',
+                '<button class="listRow pad  layer removable ' + oddeven + '" id="items">'+
+                '<div class="listColumn doubleSpace removable">' + currentLibrary[i].title + '</div>'+
+                '<div class="listColumn doubleSpace removable">' + currentLibrary[i].composer + '</div>'+
+                '<div class="listColumn lessSpace removable">' + currentLibrary[i].duration + '</div>'+
+                '<div class="listColumn lessSpace removeable">' + checkMark + '</div>'+
+                '</button>')
+
+        }
+    }
+
+    function compareBooleans(a,b){
+        return (a < b) ? -1 : (a > b) ? 1 : 0;
+    }
+    function compareBooleansReverse(a,b){
+        return (a > b) ? -1 : (a < b) ? 1 : 0;
+    }
+    function compareStrings(a, b) {
+        // Assuming you want case-insensitive comparison
+        a = a.toLowerCase();
+        b = b.toLowerCase();
+
+        return (a < b) ? -1 : (a > b) ? 1 : 0;
+    }
+    function compareStringsReverse(a, b) {
+        // Assuming you want case-insensitive comparison
+        a = a.toLowerCase();
+        b = b.toLowerCase();
+
+        return (a > b) ? -1 : (a < b) ? 1 : 0;
+    }
+
+    function changeList(ev){
+        ev.preventDefault();
+        let newList = ev.currentTarget.getAttribute('id');
+        document.querySelector('.shown').style.backgroundColor = "#252525";
+        document.querySelector('.shown').style.textShadow = "0px 0px 0px #000000";;
+        document.querySelector('.shown').classList.remove('shown');
+        document.getElementById(newList).classList.add('shown');
+        document.querySelector('.shown').style.backgroundColor = "#6f6f6f";
+        document.querySelector('.shown').style.textShadow = "0px 5px 10px #000000";
+        changeFilter(musicLibrary,newList);
+
+    }
+</script>
+</body>
+</html>

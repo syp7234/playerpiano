@@ -7,15 +7,16 @@ const app = {
             pg.addEventListener('show', app.pageShown);
         })
 
-        document.querySelectorAll('.nav-link').forEach((link)=>{
-            link.addEventListener('click', app.nav);
+        document.querySelectorAll('.nav-link').forEach((button)=>{
+            button.addEventListener('click', app.nav);
         })
-        history.replaceState({}, 'Home', '#home');
+        history.replaceState({}, 'menu', '#menu');
         window.addEventListener('popstate', app.poppin);
     },
     nav: function(ev){
         ev.preventDefault();
-        let currentPage = ev.target.getAttribute('data-target');
+        let currentPage = ev.currentTarget.getAttribute('data-target');
+        console.log(ev);
         document.querySelector('.active').classList.remove('active');
         document.getElementById(currentPage).classList.add('active');
         console.log(currentPage)
@@ -23,12 +24,7 @@ const app = {
         document.getElementById(currentPage).dispatchEvent(app.show);
     },
     pageShown: function(ev){
-        console.log('Page', ev.target.id, 'just shown');
-        let h1 = ev.target.querySelector('h1');
-        h1.classList.add('big')
-        setTimeout((h)=>{
-            h.classList.remove('big');
-        }, 1200, h1);
+
     },
     poppin: function(ev){
         console.log(location.hash, 'popstate event');

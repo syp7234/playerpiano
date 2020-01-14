@@ -1,0 +1,263 @@
+/**** DEFAULTS ****/
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+html{
+    font-size: 20px;  /* 1rem will equal this now */
+    line-height: 1.6;
+    font-family: sans-serif; /* add google fonts */
+}
+
+/**** PAGES ****/
+.page{
+    display: none;
+    width: 100%;
+    min-height: 100%; /* allow for content off the bottom of the page */
+    position: fixed;  /* or absolute if the user needs to scroll for more content */
+    /*padding: 1rem 2rem; */
+}
+.active{
+    display: block;
+}
+/************************** Menu Page ***********************************/
+#menu{
+    background: linear-gradient(90deg, #626262 50%, #4e4e4e 50%);
+}
+
+.row{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: center;
+}
+
+.leftright{
+    flex: 50%;
+    justify-content: center;
+}
+.text-center{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 4rem;
+    color: white;
+}
+
+#calText{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2rem;
+    color: white;
+}
+
+.card{
+    width: 400px;
+    height: 500px;
+    margin: auto;
+    display: block;
+    background-color: #252525;
+    margin-top: 4%;
+    border-radius: 50px;
+    border: 0;
+    transform-origin: bottom;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.9);
+    animation-duration: 5s;
+    animation-iteration-count: infinite;
+    animation-name: fadeIn , bounce-2;
+    animation-timing-function: ease;
+
+}
+.cardS{
+    width: 270px;
+    height: 180px;
+    margin: auto;
+    display: block;
+    background-color: #252525;
+    margin-top: 4%;
+    border-radius: 50px;
+    border: 0;
+    transform-origin: bottom;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.9);
+    animation-duration: 5s;
+    animation-iteration-count: infinite;
+    animation-name: bounce-2;
+    animation-timing-function: ease;
+}
+.helpButton{
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background-color: #252525;
+    position:fixed;
+    right: 5%;
+    bottom:5%;
+    border: 0;
+    font-size: 4rem;
+    color: #29aec9;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.9);
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+    animation-name: bounce-6;
+    animation-timing-function: ease;
+}
+@keyframes bounce-2 {
+    0%   { transform: translateY(0px); }
+    50%  { transform: translateY(-20px); }
+    100% { transform: translateY(0px); }
+}
+@keyframes bounce-6 {
+    0%   { transform: scale(1,1)      translateY(0); }
+    10%  { transform: scale(1.1,.9)   translateY(0); }
+    30%  { transform: scale(.9,1.1)   translateY(-100px); }
+    50%  { transform: scale(1.05,.95) translateY(0); }
+    57%  { transform: scale(1,1)      translateY(-7px); }
+    64%  { transform: scale(1,1)      translateY(0); }
+    100% { transform: scale(1,1)      translateY(0); }
+}
+/************************** Library Page ***********************************/
+#libraryDivider{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+#libraryFilter{
+    flex: 2 0 0;
+    background-color: #252525;
+    display: block;
+    height: 100vh;
+    z-index:4;
+    box-shadow: 5px 0 10px 1px black;
+    padding-left: 15px;
+    padding-right: 12px;
+}
+#libraryList{
+    flex: 5 0 0;
+    display: block;
+    z-index:1;
+    height: 100vh;
+    overflow: auto;
+    background-color: #252525;
+}
+.filterButton{
+    width: 99%;
+    background-color: #252525;
+    border-radius: 50px;
+    margin-top:30px;
+    border: 0;
+    outline: none;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.9);
+}
+.backButton{
+    width: 100px;
+    background-color: #252525;
+    border: 0;
+    outline: none;
+    left: 20px;
+    bottom: 20px;
+    position:fixed;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.9);
+    border-radius: 50%;
+}
+
+.startButton{
+    width: 200px;
+    background-color: #3a893a;
+    border-radius: 50px;
+    border: 0;
+    outline: none;
+    left: 18%;
+    bottom: 20px;
+    position:fixed;
+    font-size: 60px;
+    text-align: center;
+    color: white;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.9);
+    animation-duration: 5s;
+    animation-iteration-count: infinite;
+    animation-name: bounce-2;
+    animation-timing-function: ease;
+}
+.textFilterButton{
+    color: white;
+    font-size: 60px;
+    text-align: right;
+    width: 95%;
+    margin-left:auto;
+    margin-right:20px;
+}
+.listRow{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+    border: 0;
+    outline: none;
+}
+.listColumn{
+    display: flex;
+    flex-direction: column;
+    flex-basis: 100%;
+    font-size: 20px;
+    color: white;
+    text-align: center;
+
+}
+.doubleSpace{
+    flex: 2;
+}
+.lessSpace{
+    flex: 1;
+}
+.pad{
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+.headButton{
+    color: white;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    font-size: 24px;
+    text-align: center;
+    background-color: #252525;
+    outline: none;
+    border: 0;
+    border-radius: 50px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.9);
+}
+#head{
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    background-color: #252525;
+    box-shadow: 0 5px 10px 1px black;
+}
+.odd{
+    background-color: #5f5f5f;
+}
+.even{
+    background-color: #6f6f6f;
+}
+
+.layer{
+    z-index: 2;
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
