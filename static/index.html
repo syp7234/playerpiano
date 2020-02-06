@@ -153,16 +153,85 @@
         <button class="helpButton">?</button>
     </div>
     <div class="page" id="library">
-        <div id="libraryDivider">
+        <div id="myModal" class="Modal is-hidden is-visuallyHidden">
+            <!-- Modal content -->
+            <div class="Modal-content">
+                <button class="Close" id="closeModal">
+                    <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" fill="gray"><path d="m437.019531 74.980469c-48.351562-48.351563-112.640625-74.980469-181.019531-74.980469s-132.667969 26.628906-181.019531 74.980469c-48.351563 48.351562-74.980469 112.640625-74.980469 181.019531 0 68.382812 26.628906 132.667969 74.980469 181.019531 48.351562 48.351563 112.640625 74.980469 181.019531 74.980469s132.667969-26.628906 181.019531-74.980469c48.351563-48.351562 74.980469-112.636719 74.980469-181.019531 0-68.378906-26.628906-132.667969-74.980469-181.019531zm-70.292969 256.386719c9.761719 9.765624 9.761719 25.59375 0 35.355468-4.882812 4.882813-11.28125 7.324219-17.679687 7.324219s-12.796875-2.441406-17.679687-7.324219l-75.367188-75.367187-75.367188 75.371093c-4.882812 4.878907-11.28125 7.320313-17.679687 7.320313s-12.796875-2.441406-17.679687-7.320313c-9.761719-9.765624-9.761719-25.59375 0-35.355468l75.371093-75.371094-75.371093-75.367188c-9.761719-9.765624-9.761719-25.59375 0-35.355468 9.765624-9.765625 25.59375-9.765625 35.355468 0l75.371094 75.367187 75.367188-75.367187c9.765624-9.761719 25.59375-9.765625 35.355468 0 9.765625 9.761718 9.765625 25.589844 0 35.355468l-75.367187 75.367188zm0 0"/></svg>
+                </button>
+                <button class="helpButtonLibrary">?</button>
+                <div id="popupHead">UPLOAD MIDI TO THE SYSTEM</div>
+                <div class ="blurIn" id="UploadInstruction" style="position: absolute;color: white;margin-left: 1em; display: none; z-index: 9955">
+                    Instructions:
+                    <div style="margin-left: 1em;color: white;">
+                        1. The MIDI file must be downloaded prior this step.
+                        <div style="margin-left: 1em;margin-right:1em;color: white;word-wrap: break-word;">
+                            (If the file has not been downloaded, please disconnect from the system, connect to the
+                            internet, proceed to download the MIDI file from your desired site, and reconnect to the
+                            system to continue)
+                        </div>
+                        2. Click Select File button to select your MIDI file<br>
+                        3. Fill in the necessary information related to the file<br>
+                        4. Click Upload button<br>
+                        5. The system will display the message saying the upload completed
+                    </div>
+                </div>
+                <div class = "blurOut" id="uploadContent">
+                    <div class="popupContent">
+                        <div class="innerDivider">
+                            <input type="button" id="get_file" value="Select File">
+                            <input type="file" id="my_file">
+                        </div>
+                        <div class="innerDivider">
+                            <div id="customfileupload">Select a file</div>
+                        </div>
+                    </div>
+                    <div class="popupContent">
+                        Title
+                        <div class="innerDivider">
+                            eeewrqwe
+                        </div>
+                        <div class="innerDivider">
+                            erere
+                        </div>
+                    </div>
+                    <div class="popupContent">
+                        COMPOSER (First Last)
+                        <div class="innerDivider">
+
+                        </div>
+                        <div class="innerDivider">
+
+                        </div>
+                    </div>
+                    <div class="popupContent">
+                        DURATION (MM:SS)
+                        <div class="innerDivider">
+
+                        </div>
+                        <div class="innerDivider">
+
+                        </div>
+                    </div>
+                    <div class="popupContent">
+                        UPLOAD Button
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="MainContainer" id="libraryDivider">
             <div id="libraryFilter">
                 <button class="filterButton shown" id="allSongs">
                     <div class="textFilterButton">ALL SONGS</div>
                 </button>
-                <button class="filterButton" id="handSplitOnly">
+                <button class=" filterButton" id="handSplitOnly">
                     <div class="textFilterButton">HANDS SPLIT SUPPORTED ONLY</div>
                 </button>
-                <button class="filterButton" id="recorded">
+                <button class=" filterButton" id="recorded">
                     <div class="textFilterButton">RECORDED ONLY</div>
+                </button>
+                <button class="filterButton" id="upload">
+                    <div class="textFilterButton">UPLOAD MIDI</div>
                 </button>
                 <button class="backButton nav-link" id="libraryBack" data-target="menu">
                     <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
@@ -178,7 +247,7 @@
                     </g>
                     </svg>
                 </button>
-                <button class="startButton" id="libraryStart">START</button>
+                <button class="startButton hideable" id="libraryStart">START</button>
             </div>
             <div id="libraryList">
                 <div class="listRow" id="head">
@@ -251,11 +320,32 @@
     document.querySelectorAll('.filterButton').forEach((button)=>{
         button.addEventListener('click', changeList);
     });
-
     document.getElementById('libraryButton').addEventListener("click",loadList);
     document.querySelectorAll('.headButton').forEach((button)=>{
         button.addEventListener('click', changeOrder);
     });
+
+
+    function selectSong(ev) {
+        console.log("here");
+        if (document.querySelector('.selected')!= null){
+            if (document.querySelector('.selected').classList.contains("odd")) {
+                document.querySelector('.selected').style.backgroundColor = "#5f5f5f";
+            } else if (document.querySelector('.selected').classList.contains("even")) {
+                document.querySelector('.selected').style.backgroundColor = "#6f6f6f";
+            }
+            document.querySelector('.selected').style.boxShadow = null;
+            document.querySelector('.selected').style.marginTop = null;
+            document.querySelector('.selected').style.marginBottom = null;
+            document.querySelector('.selected').classList.remove(('selected'));
+        }
+        ev.currentTarget.style.backgroundColor = "#969696";
+        //ev.currentTarget.style.boxShadow = "0 0px 20px black";
+        ev.currentTarget.style.marginTop = "5px";
+        ev.currentTarget.style.marginBottom = "5px";
+        ev.currentTarget.classList.add("selected");
+        document.querySelector('.hideable').style.display = "block";
+    }
 
     function changeOrder(ev){
         let clickID = ev.currentTarget.getAttribute('id');
@@ -359,7 +449,7 @@
             case "recorded":
                 currentLibrary = JSON.parse(JSON.stringify(musicLibrary));
                 for (i = 0; i < currentLibrary.length; i++){
-                    if (currentLibrary[i].type != "record"){
+                    if (currentLibrary[i].type !== "record"){
                         indexToDelete.push(i);
                     }
                 }
@@ -404,6 +494,12 @@
                 '</button>')
 
         }
+        document.querySelectorAll('.listRow').forEach((button)=>{
+            if (button.getAttribute("id") !== "head"){
+                button.addEventListener('click', selectSong);
+            }
+        });
+        document.querySelector('.hideable').style.display = "None";
     }
 
     function compareBooleans(a,b){
@@ -439,6 +535,69 @@
         changeFilter(musicLibrary,newList);
 
     }
+    // Get the modal
+    var modal = document.getElementById('myModal');
+
+    // Get the main container and the body
+    var body = document.getElementsByTagName('body');
+    var container = document.querySelector('.MainContainer');
+    console.log(container);
+    // Get the open button
+    var btnOpen = document.getElementById("upload");
+
+    // Get the close button
+    var btnClose = document.getElementById("closeModal");
+
+    // Open the modal
+    btnOpen.onclick = function() {
+        modal.className = "Modal is-visuallyHidden";
+        setTimeout(function() {
+            console.log(container.className);
+            container.classList.add("is-blurred");
+            console.log(container.className);
+            modal.className = "Modal";
+        }, 100);
+        //container.parentElement.className = "ModalOpen";
+    };
+
+    // Close the modal
+    btnClose.onclick = function() {
+        modal.className = "Modal is-hidden is-visuallyHidden";
+        body.className = "";
+        container.className = "MainContainer";
+        $('#UploadInstruction').visible()
+        //container.parentElement.className = "";
+    };
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+        if (event.target === modal) {
+            modal.className = "Modal is-hidden";
+            body.className = "";
+            container.classList.remove("is-blurred");
+            //container.parentElement.className = "";
+        }
+    };
+
+    $('.helpButtonLibrary').click(function() {
+        $('#UploadInstruction').slideToggle("slow").toggleClass("blurOut blurIn");
+        $('#uploadContent').toggleClass("blurIn blurOut");
+        console.log($('.helpButtonLibrary').text());
+        if($('.helpButtonLibrary').text() === '?'){
+            $('.helpButtonLibrary').text('X');
+        } else {
+            $('.helpButtonLibrary').text('?');
+        }
+        console.log(document.getElementById("uploadContent").classList);
+    });
+
+    document.getElementById('get_file').onclick = function() {
+        document.getElementById('my_file').click();
+    };
+
+    $('input[type=file]').change(function (e) {
+        $('#customfileupload').html($(this).val());
+    });
 </script>
 </body>
 </html>

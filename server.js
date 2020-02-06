@@ -14,7 +14,7 @@ router.get('/',function(req,res){
 
 //add the router
 app.use('/', router);
-server.listen(3000, '0.0.0.0');
+server.listen(3000, '127.0.0.1');
 
 console.log('Running at Port 0.0.0.0:3000');
 let rawData = fs.readFileSync('json/library.json');
