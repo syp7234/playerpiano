@@ -33,7 +33,8 @@ Dated: 11/21/2020
 ## Design
 
 ### Server Setup & Routing
-Server routing is mostly set up and. Familiarization with how to connect with WIFI to be included 
+
+Server routing is set up and ready. Familiarization WIFI connection ease of use to be included in minor prototyping and proto-typing. Much of the leg-work is saved for the production leg of the project in the Spring.
 
 
 ### Webpages and Application
