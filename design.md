@@ -1,5 +1,5 @@
 # Design Strategies and Associated Documents
-Dated: 11/21/2020
+Dated: 2/16/2021
 ## Index:
 #### Server Setup & Routing
 * Connection to HTML Pages & WIFI Connectivity
@@ -40,6 +40,8 @@ Server routing is set up and ready. Familiarization WIFI connection ease of use 
 ### Webpages and Application
 The application portion of the player piano front-end is dominated by the index.html file running on SPA or Single Page Application. SPA is known for quick renders and simple implementation work. For the most part, much of the functionality of the device is slaved to python scripts that handle the actual GPIO and MIDI parsing, managing, and functionality. 
 
+Note that there isn't a web development framework being used - if this matters to you, then you know more than I do and might wish to plan a design where the code is converted/redrawn with an easy-to-use one.
+
 Below are the webpages and their respective informational blurbs. Some major features and comments have been included for misc. information.
 
 1. Home Screen
@@ -67,7 +69,7 @@ In process, it looks like the following: selection of dynamic e.g. fff > play no
 
 1. Help Screen
 
-{WIP} - Not yet implemented. Will consist of a full/half-page of the general get-started information for the user. 
+Consists of a full/half-page of the general get-started information for the user. 
 
 ### Server-PWM System (SPS) 
 
