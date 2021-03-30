@@ -13,6 +13,19 @@ router.get('/',function(req,res){
     res.sendfile(path.join(__dirname+'/static/index.html'));
 });
 
+
+const spawn = require('child_process').spawn;
+
+const process = spawn('python', ['./hello.py']);
+
+process.stdout.on('data', data =>{
+   console.log(data.toString())
+});
+
+setTimeout(function(){
+    process.kill(process.ppid, 'SIGHUP')
+}, 5000);
+
 //Add the router
 app.use('/', router);
 server.listen(3000, '127.0.0.1');
@@ -23,9 +36,18 @@ let allSongs = JSON.parse(rawData);
 //console.log(allSongs); // PRINT: LIBRARY LIST
 io.on('connection', function(socket){
     console.log('User connected...');
+
+    // Provide the browser with a list of all available songs
     socket.on('request library', function (data) {
         console.log(data);
         let library = JSON.parse(rawData);
         socket.emit('send library', library);
+    });
+
+    // Perform the Play action and play the song
+    socket.on('request song', function (data) {
+        console.log(data);
+        let library = JSON.parse(rawData);
+        socket.emit('send song', library);
     });
 });

@@ -1,5 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<!--
+TODO: Insert framing for Record functionality
+TODO: Insert framing for Calibration functionality
+TODO: Insert framing for Play functionality
+TODO: Determine method for piano roll functionality (chrome-music-lab?)
+-->
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <title>Player Piano</title>
@@ -158,19 +164,20 @@
                     <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" fill="gray"><path d="m437.019531 74.980469c-48.351562-48.351563-112.640625-74.980469-181.019531-74.980469s-132.667969 26.628906-181.019531 74.980469c-48.351563 48.351562-74.980469 112.640625-74.980469 181.019531 0 68.382812 26.628906 132.667969 74.980469 181.019531 48.351562 48.351563 112.640625 74.980469 181.019531 74.980469s132.667969-26.628906 181.019531-74.980469c48.351563-48.351562 74.980469-112.636719 74.980469-181.019531 0-68.378906-26.628906-132.667969-74.980469-181.019531zm-70.292969 256.386719c9.761719 9.765624 9.761719 25.59375 0 35.355468-4.882812 4.882813-11.28125 7.324219-17.679687 7.324219s-12.796875-2.441406-17.679687-7.324219l-75.367188-75.367187-75.367188 75.371093c-4.882812 4.878907-11.28125 7.320313-17.679687 7.320313s-12.796875-2.441406-17.679687-7.320313c-9.761719-9.765624-9.761719-25.59375 0-35.355468l75.371093-75.371094-75.371093-75.367188c-9.761719-9.765624-9.761719-25.59375 0-35.355468 9.765624-9.765625 25.59375-9.765625 35.355468 0l75.371094 75.367187 75.367188-75.367187c9.765624-9.761719 25.59375-9.765625 35.355468 0 9.765625 9.761718 9.765625 25.589844 0 35.355468l-75.367187 75.367188zm0 0"/></svg>
                 </button>
                 <div id="popupHelpHead"></div>
-                <div class ="blurIn" id="HelpInstruction" style="position: absolute;color: white;margin-left: 1em; display: none; z-index: 9955">
-                    Instructions:
+                <div class ="blurIn" id="HelpInstruction" style="font-size:115%; position: absolute;color: white;margin-left: 1em; display: none; z-index: 9955">
+                    <h1 style="font-size:175%;"> <br>Welcome to the Player Piano! </h1>
+                    <h2 style="font-size:105%;">  Navigation: </h2>
                     <div style="margin-left: 1em;color: white;">
-                        1. The MIDI file must be downloaded prior this step.
+                        <!-- TODO: Update Help text with correct & final functionality-->
+                        Library: Takes you to the catalog of available MIDI music and choose which one to
+                        play! You can also choose to upload a MIDI song.<br><br>
+                        Record: Takes you to the play screen where you can
+                        play music and record to a MIDI file! <br><br>
+                        Calibration: Have the player piano automatically correct note volume and dynamics
                         <div style="margin-left: 1em;margin-right:1em;color: white;word-wrap: break-word;">
-                            (If the file has not been downloaded, please disconnect from the system, connect to the
-                            internet, proceed to download the MIDI file from your desired site, and reconnect to the
-                            system to continue)
+                            You can select the minimum volume in which the piano plays - in case it's too quiet or loud!
                         </div>
-                        2. Click Select File button to select your MIDI file<br>
-                        3. Fill in the necessary information related to the file<br>
-                        4. Click Upload button<br>
-                        5. The system will display the message saying the upload completed
+                        <br> (?) Button: Brings you right back here!<br><br>
                     </div>
                 </div>
             </div>
@@ -273,7 +280,7 @@
                     </g>
                     </svg>
                 </button>
-                <button class="startButton hideable" id="libraryStart">START</button>
+                <button class="startButton hideable nav-link" id="libraryStart" data-target="play">START</button>
             </div>
             <div id="libraryList">
                 <div class="listRow" id="head">
@@ -294,7 +301,112 @@
         </div>
     </div>
     <div class="page" id="play">
-        play
+        <div class="MainContainer" id="playDivider">
+            <div id="controlsSection">
+                <div class="controlCase">
+                    <!-- Hand and Tempo Selection -->
+                    <div class="upDownCase">
+                        <div class="controlButton"><img
+                                src="./images/l_hand.svg"
+                                class="centerImage"
+                                alt="left hand"
+                                height="87"
+                                width="100" /></div>
+                        <div class="upDownTextCase">
+                            <div class="controlsText"> Left Hand or Right Hand </div>
+                        </div>
+                        <div class="controlButton"><img
+                                src="./images/r_hand.svg"
+                                alt="right hand"
+                                class="centerImage"
+                                height="87"
+                                width="100" /></div>
+                    </div>
+                    <div class="upDownCase">
+                        <div class="controlButton"><img
+                                src="./images/down.svg"
+                                alt="DOWN"
+                                class="centerImage"
+                                height="87"
+                                width="100" /></div>
+                        <div class="upDownTextCase">
+                            <div class="controlsText">Tempo:</div>
+                            <div class="controlsText">120</div>
+                        </div>
+                        <div class="controlButton"><img
+                                src="./images/up.svg"
+                                alt="UP"
+                                class="centerImage"
+                                height="87"
+                                width="100" /></div>
+                    </div>
+                </div>
+                <!-- Title, Back, Play, Pause Controls -->
+                <div class="controlCase">
+                    <div class="upDownCase">
+                        <div class="controlsTitleText"><var id="titleName">TITLE GOES HERE</var></div>
+                    </div>
+                    <button class="backPlayPauseButton nav-link" id="btnBack" data-target="library">
+                        <img
+                                src="./images/back.svg"
+                                alt="Back"
+                                class="centerImage"
+                                height="87"
+                                width="100" />
+                    </button>
+                    <button class="backPlayPauseButton" id="btnPlay">
+                        <img
+                                src="./images/play.svg"
+                                alt="Play"
+                                class="centerImage"
+                                height="87"
+                                width="100" />
+                    </button>
+                    <button class="backPlayPauseButton is-hidden is-visuallyHidden" id="btnPause">
+                        <img
+                                src="./images/pause.svg"
+                                alt="Pause"
+                                class="centerImage"
+                                height="87"
+                                width="100" />
+                    </button>
+                    <button class="backPlayPauseButton" id="rcdPause">
+                        <img
+                                src="./images/record-button.svg"
+                                alt="Record"
+                                class="centerImage"
+                                height="87"
+                                width="75" />
+                    </button>
+                </div>
+                <!-- Title, Back, Play, Pause, Record Controls -->
+                <div class="controlCase">
+                    <div class="centeredCase">
+                        <div class="controlsTitleText">Count-In</div>
+                        <div class="controlButton">3</div>
+                    </div>
+                    <div class="centeredCase">
+                        <div class="controlButton"><img
+                                src="./images/down.svg"
+                                alt="DOWN"
+                                class="centerImage"
+                                height="87"
+                                width="100" /></div>
+                        <div class="controlsTitleText">Volume</div>
+                        <div class="controlButton"><img
+                                src="./images/up.svg"
+                                alt="UP"
+                                class="centerImage"
+                                height="87"
+                                width="100" /></div>
+                    </div>
+                </div>
+            </div>
+            <div id="playSection">
+                <div id="noteSection"></div>
+            </div>
+
+        </div>
     </div>
     <div class="page" id="record">
         record
@@ -335,6 +447,7 @@
 <script src="/jsmodules/socket.io.js"></script>
 <script src="/jsmodules/jquery.js"></script>
 <script>
+    // JS Script for Main Page on Selection of Help Logo
     // Get the modal
     var modalHelp = document.getElementById('helpModal');
 
@@ -382,10 +495,8 @@
             //container.parentElement.className = "";
         }
     });
-
 </script>
 <script>
-
     let libraryLoaded = false;
     let orderTracker = 'title';
     let orderDirection = 'normal';
@@ -421,6 +532,17 @@
         ev.currentTarget.style.marginBottom = "5px";
         ev.currentTarget.classList.add("selected");
         document.querySelector('.hideable').style.display = "block";
+
+        // Convert the TitleName
+        if (ev.target.classList.contains('listColumn')){ // If the parent div was not selected...
+            document.getElementById('titleName').textContent =
+                $(ev.target).parent().children().first('div')[0].textContent;
+        }
+        else{ // If the parent div was selected...
+            document.getElementById('titleName').textContent =
+                $(ev.target).children().first('div')[0].textContent;
+        }
+
     }
 
     function changeOrder(ev){
@@ -674,5 +796,52 @@
         $('#customfileupload').html($(this).val());
     });
 </script>
+
+<script>
+    // Play page functionality
+    var socket = io();
+    document.querySelector('.shown').style.backgroundColor = "#6f6f6f";
+    document.querySelector('.shown').style.textShadow = "0px 5px 10px #000000";
+    document.getElementById('title').style.backgroundColor = "#5f5f5f";
+    document.querySelectorAll('.filterButton').forEach((button)=>{
+        button.addEventListener('click', changeList);
+    });
+    document.getElementById('libraryButton').addEventListener("click",loadList);
+    document.querySelectorAll('.headButton').forEach((button)=>{
+        button.addEventListener('click', changeOrder);
+    });
+
+    var btnPlay = document.getElementById("btnPlay");
+    var btnPause = document.getElementById("btnPause");
+    var btnBack = document.getElementById("btnBack");
+
+    // Open the modal
+    btnPlay.onclick = function() {
+        modal.className = "Modal is-visuallyHidden";
+        setTimeout(function() {
+            console.log(container.className);
+            container.classList.add("is-blurred");
+            console.log(container.className);
+            modal.className = "Modal";
+        }, 100);
+
+    };
+
+    function playSong(ev){
+        if (libraryLoaded === false){
+            socket.emit('request song', 'now');
+            socket.on('send library', function (data) {
+                musicLibrary = data;
+                console.log(data.sort(function(a,b){
+                    return compareStrings(a.title,b.title);
+                }));
+                changeFilter(data,"allSongs");
+            });
+            libraryLoaded = true;
+        }
+    }
+
+</script>
+
 </body>
 </html>
