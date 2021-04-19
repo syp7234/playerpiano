@@ -91,7 +91,14 @@ def playMidi(song_name, tempo=0):
     MOSI = board.MOSI
     LATCH = digitalio.DigitalInOut(board.D5)
     
-    HBRIDGE = digitalio.DigitalInOut(board.D6) # may need to be a different IO port
+    HBRIDGE_A = digitalio.DigitalInOut(board.D6) # may need to be a different IO port
+    HBRIDGE_B = digitalio.DigitalInOut(board.D7) # may need to be a different IO port
+    PWMPIN = 12				
+    GPIO.setwarnings(False)			            #disable warnings
+    GPIO.setmode(GPIO.BOARD)		            #set pin numbering system
+    GPIO.setup(PWMPIN,GPIO.OUT)
+    pi_pwm = GPIO.PWM(ledpin,10000)		        #create PWM instance with frequency
+    pi_pwm.start(0)		
 
     # Initialize SPI bus.
     spi = busio.SPI(clock=SCK, MOSI=MOSI)
@@ -233,10 +240,14 @@ def playMidi(song_name, tempo=0):
         
         time.sleep(mido.tick2second(line[88], mid.ticks_per_beat, tempo) * 0.7)
         
-        if notesArray[z][90] == 0 and notesArray[z+1][90] == 1: # if sustain being activated next, start it 1 note early
-            HBRIDGE.value = True #not sure how we're sending commands with digitalio, may be wrong
-        if notesArray[z][90] == 1 and notesArray[z+1][90] == 0:
-            HBRIDGE.value = False
+        if notesArray[z][90] == 0 and notesArray[z+1][90] == 1: # if sustain being activated next, start it 1 note early -- SUSTAIN ENGAGED
+            HBRIDGE_A.value = 1 
+            HBRDIGE_B.value = 0
+            # Stop after 0.5 seconds - thread
+        if notesArray[z][90] == 1 and notesArray[z+1][90] == 0: # SUSTAIN DISENGAGED
+            HBRIDGE_A.value = 0 
+            HBRDIGE_B.value = 1
+            # Stop after 0.5 seconds - thread
         
         for x in range(88):
             if notesArray[z+1][x] == 0:
