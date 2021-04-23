@@ -13,6 +13,7 @@ import sys
 import os
 import json
 import time
+import threading
 from math import floor
 
 import board
@@ -88,6 +89,28 @@ def getTempo(song_name):
             tempo = int(msg.tempo)
             break
     print(tempo)
+
+    def actuateSustainPedal(dir):
+        """
+        Thread trigger function for the sustain pedal - clockwise is UP, counter-clockwise is DOWN
+        :param dir: direction to actuate the pedal - INT - 1 for UP, 0 for DOWN
+        :return: None
+        """
+        HBRIDGE_A = digitalio.DigitalInOut(board.D6) # may need to be a different IO port
+        HBRIDGE_B = digitalio.DigitalInOut(board.D7) # may need to be a different IO port
+
+        if dir == 1:
+            HBRIDGE_A.value = True
+            HBRIDGE_B.value = False
+            time.sleep(0.5)  # Time for sustain pedal to actuate - UP
+            HBRIDGE_A.value = False
+            HBRIDGE_B.value = False
+        else:
+            HBRIDGE_A.value = False
+            HBRIDGE_B.value = True
+            time.sleep(0.5)  # Time for sustain pedal to actuate - DOWN
+            HBRIDGE_A.value = False
+            HBRIDGE_B.value = False
 
 def playMidi(song_name, tempo=0):
     """
@@ -272,13 +295,11 @@ def playMidi(song_name, tempo=0):
         time.sleep(mido.tick2second(line[88], mid.ticks_per_beat, tempo) * 0.7)
         
         if notesArray[z][90] == 0 and notesArray[z+1][90] == 1: # if sustain being activated next, start it 1 note early -- SUSTAIN ENGAGED
-            HBRIDGE_A.value = 1 
-            HBRDIGE_B.value = 0
-            # Stop after 0.5 seconds - thread
+            act = threading.Thread(target=actuateSustainPedal, args=(1,))
+            act.start()
         if notesArray[z][90] == 1 and notesArray[z+1][90] == 0: # SUSTAIN DISENGAGED
-            HBRIDGE_A.value = 0 
-            HBRDIGE_B.value = 1
-            # Stop after 0.5 seconds - thread
+            act = threading.Thread(target=actuateSustainPedal, args=(0,))
+            act.start()
         
         for x in range(88):
             if notesArray[z+1][x] == 0:

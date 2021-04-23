@@ -37,13 +37,13 @@ io.on('connection', function(socket){
         currSongProc = false; // Instantiate child process as 'false' for redundancy check
 
         const { spawn } = require('child_process');
-        const tempoThread = spawn('python', ['tempo.py']); // play_midi.py tempo
+        const tempoThread = spawn('python', ['play_midi.py tempo']); // play_midi.py tempo
         tempoThread.stdout.on('data', function(data) {
             // Convert to string and emit tempo back to webpage
             console.log(data);
             socket.emit('send songpreproc', String(data));
         });
-        currSongProc = spawn('python', ['repeat.py']); // play_midi.py play 'songname' tempo
+        currSongProc = spawn('python', ['play_midi.py play songname tempo']); // play_midi.py play 'songname' tempo
 
         //socket.emit('send songpreproc', tempo);
     });
@@ -55,9 +55,9 @@ io.on('connection', function(socket){
         currSongProc = false; // Instantiate child process as 'false' for redundancy check
 
         const { spawn } = require('child_process');
-        const reset = spawn('python', ['hello.py']); // play_midi.py reset
+        const reset = spawn('python', ['play_midi.py reset']); // play_midi.py reset
 
-        currSongProc = spawn('python', ['hello.py']); // play_midi.py play songname tempo
+        currSongProc = spawn('python', ['play_midi.py play songname tempo']); // play_midi.py play songname tempo
 
         socket.emit('send song', 'exit');
     });
@@ -69,7 +69,7 @@ io.on('connection', function(socket){
             currSongProc.kill('SIGINT');
         }
         const { spawn } = require('child_process');
-        const reset = spawn('python', ['hello.py']); // play_midi.py reset
+        const reset = spawn('python', ['play_midi.py reset']); // play_midi.py reset
 
         socket.emit('send reset', 'exit');
     });
