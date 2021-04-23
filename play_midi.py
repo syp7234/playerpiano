@@ -10,6 +10,7 @@ Meant to be threaded via server JavaScript to perform MIDI play
 """
 import mido
 import sys
+import os
 import json
 import time
 from math import floor
@@ -70,6 +71,23 @@ def read_calibration_file():
     file.close()
     return noteMinDict
 
+def getTempo(song_name):
+    """
+    Method to ge the original tempo of a song from and return it
+    :param song_name: Song to get the original set tempo from
+    :return: server searches STDOUT pipe for tempo response - CAREFUL WITH PRINT STATEMENTS
+    """
+    if not os.path.exists('midifiles/' + song_name):
+        sys.exit("Song Provided does not exist")  # Redundant Check - song wouldn't be selectable if it doesn't exist
+    mid = mido.MidiFile('midifiles/' + song_name)
+
+    tempo = 0
+
+    for msg in mid:
+        if msg.is_meta and msg.type == 'set_tempo':
+            tempo = int(msg.tempo)
+            break
+    print(tempo)
 
 def playMidi(song_name, tempo=0):
     """
@@ -78,6 +96,8 @@ def playMidi(song_name, tempo=0):
     :param tempo: OVERWRITE tempo, 0 otherwise to set to tempo found in metadata
     :return:
     """
+    if not os.path.exists('midifiles/' + song_name):
+        sys.exit("Song Provided does not exist")  # Redundant Check - song wouldn't be selectable if it doesn't exist
     mid = mido.MidiFile('midifiles/' + song_name)
 
     notesDict = {'songName': 'testname', 'bpm': 999, 'notes': []}
@@ -111,7 +131,7 @@ def playMidi(song_name, tempo=0):
             tickLength = mido.tick2second(1, mid.ticks_per_beat, tempo)
             break
 
-    print('Tick length: ' + str(tickLength))
+    #print('Tick length: ' + str(tickLength))
     currentTick = 0
     notesArray[0] = [0 for x in range(89)]
     lineIncrement = 0
@@ -177,7 +197,18 @@ def playMidi(song_name, tempo=0):
 
     startTime = time.time()
     tlc5947.write()
-    time.sleep(3) # TODO: INSERT COUNTIN HERE
+    # COUNT-IN WAIT IS PERFORMED HERE - DONE TEMPORARILY VIA FILE POLLING - EXPECTED TO BE
+    # TODO: Replace by Django Webframework
+    while 1:
+        if os.path.exists('p'):
+            os.remove('p')
+            break
+        elif os.path.exists('x'):
+            os.remove('x')
+            sys.exit()
+        elif (time.time()-startTime)==1800:
+            sys.exit()  # After 30 minutes, timeout
+
     for z in range(0, len(notesArray)-1, 2):
         line = notesArray[z]
         """
@@ -215,7 +246,40 @@ def playMidi(song_name, tempo=0):
         tlc5947[x] = 0
     tlc5947.write()
 
-reset_key()
+
+def main():
+    """
+    Arguments expected: play, reset, tempo
+    Respectively calls their function
+    :return:
+    """
+    cmd=None
+    numArg = len(sys.argv)
+    if numArg >= 2:
+        cmd = sys.argv[1]
+    elif cmd is 'reset':
+        reset_key()
+    elif cmd is 'tempo' and numArg >= 3:
+        songname = sys.argv[2]
+        getTempo(songname)
+    elif cmd is 'play' and numArg >= 3:
+        songname = sys.argv[2]
+        tempo = 0
+        if numArg >= 4:
+            tempo = int(sys.argv[3])
+        reset_key()  # Redundant key reset
+        playMidi(songname, tempo)
+    else:
+        sys.exit("Please insert command as argument. reset, play songname opt:tempo]")
+
+
+
+if __name__ == "__main__":
+    main()
+
+
+
+#reset_key()
 #playMidi('bumble_bee.mid')
 #playMidi('for_elise_by_beethoven.mid')
 # playMidi('debussy_clair_de_lune.mid')
@@ -224,7 +288,7 @@ reset_key()
 #playMidi('Pinkfong-Babyshark-Anonymous-20190203093900-nonstop2k.com.mid')
 #playMidi('080-Finale.mid')
 #playMidi('gwyn_by_nitro.mid')
-playMidi('Westworld_Theme.mid')
+#playMidi('Westworld_Theme.mid')
 #playMidi('Smash_Mouth.mid')
 #playMidi('vangelis_-_chariots_of_fire_ost_bryus_vsemogushchiy.mid')
 #playMidi('GameofThrones.mid')

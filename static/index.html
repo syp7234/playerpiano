@@ -302,7 +302,7 @@ TODO: Determine method for piano roll functionality (chrome-music-lab?)
     </div>
     <div class="page" id="play">
         <div class="MainContainer" id="playDivider">
-            <div id="controlsSection">
+            <div class="controlsSection">
                 <div class="controlCase">
                     <!-- Hand and Tempo Selection -->
                     <div class="upDownCase">
@@ -331,7 +331,7 @@ TODO: Determine method for piano roll functionality (chrome-music-lab?)
                                 width="100" /></div>
                         <div class="upDownTextCase">
                             <div class="controlsText">Tempo:</div>
-                            <div class="controlsText">120</div>
+                            <div class="controlsText"><var id="userTempo">120</var></div>
                         </div>
                         <div class="controlButton"><img
                                 src="./images/up.svg"
@@ -370,7 +370,7 @@ TODO: Determine method for piano roll functionality (chrome-music-lab?)
                                 height="87"
                                 width="100" />
                     </button>
-                    <button class="backPlayPauseButton" id="rcdPause">
+                    <button class="backPlayPauseButton" id="btnRecord">
                         <img
                                 src="./images/record-button.svg"
                                 alt="Record"
@@ -383,7 +383,7 @@ TODO: Determine method for piano roll functionality (chrome-music-lab?)
                 <div class="controlCase">
                     <div class="centeredCase">
                         <div class="controlsTitleText">Count-In</div>
-                        <div class="controlButton">3</div>
+                        <div class="controlButton" id="countTimeCase"><var id="countTime">8</var></div>
                     </div>
                     <div class="centeredCase">
                         <div class="controlButton"><img
@@ -402,14 +402,48 @@ TODO: Determine method for piano roll functionality (chrome-music-lab?)
                     </div>
                 </div>
             </div>
-            <div id="playSection">
+            <div class="playSection">
                 <div id="noteSection"></div>
             </div>
 
         </div>
     </div>
     <div class="page" id="record">
-        record
+        <div class="MainContainer" id="recordDivider">
+            <div class="controlsSection">
+                <!-- Title, Back, Play, Pause Controls -->
+                <div class="controlCase">
+                    <div class="upDownCase">
+                        <div class="controlsTitleText">Record Your Playing!</div>
+                    </div>
+                    <button class="backPlayPauseButton nav-link" id="btnRecordBack" data-target="menu">
+                        <img
+                                src="./images/back.svg"
+                                alt="Back"
+                                class="centerImage"
+                                height="87"
+                                width="100" />
+                    </button>
+                    <button class="backPlayPauseButton" id="btnRecordRecord">
+                        <img
+                                src="./images/record-button.svg"
+                                alt="Record"
+                                class="centerImage"
+                                height="87"
+                                width="75" />
+                    </button>
+                </div>
+                <!-- Count-in & Controls -->
+                <div class="controlCase">
+                    <div class="centeredCase">
+                        <div class="controlsTitleText">Count-In</div>
+                        <div class="controlButton">3</div>
+                    </div>
+                </div>
+            </div>
+            <div class="noteSection">
+                <div id="noteRecordSection"></div>
+            </div>
     </div>
     <div class="page" id="calibration">
         calibration
@@ -514,7 +548,7 @@ TODO: Determine method for piano roll functionality (chrome-music-lab?)
 
 
     function selectSong(ev) {
-        console.log("here");
+        //console.log("here");
         if (document.querySelector('.selected')!= null){
             if (document.querySelector('.selected').classList.contains("odd")) {
                 document.querySelector('.selected').style.backgroundColor = "#5f5f5f";
@@ -792,6 +826,27 @@ TODO: Determine method for piano roll functionality (chrome-music-lab?)
         document.getElementById('my_file').click();
     };
 
+    document.getElementById("libraryStart").onclick = function() {
+        // Get the original tempo from song
+        const songLoaded = false;
+        if (songLoaded === false){
+            // Send the title to grab the original tempo, and begin loading the song with original tempo
+            socket.emit('request songpreproc', document.getElementById('titleName').textContent,
+                document.getElementById('userTempo').textContent);
+            // Receive the base tempo of the song and set accordingly
+            socket.on('send songpreproc', function (tempo) {
+                document.getElementById('userTempo').textContent = tempo;
+            });
+        }
+
+        // Start song pre-processing
+        if (songLoaded === false){
+            socket.emit('request song', titleName, 'tempo');
+            socket.on('send song', function (data) {
+                console.log(data)
+            });
+        }
+    };
     $('input[type=file]').change(function (e) {
         $('#customfileupload').html($(this).val());
     });
@@ -806,7 +861,9 @@ TODO: Determine method for piano roll functionality (chrome-music-lab?)
     document.querySelectorAll('.filterButton').forEach((button)=>{
         button.addEventListener('click', changeList);
     });
-    document.getElementById('libraryButton').addEventListener("click",loadList);
+    document.getElementById('btnPlay').addEventListener("click",playSong);
+    document.getElementById('btnPause').addEventListener("click",resetSong);
+    document.getElementById('btnBack').addEventListener("click",resetSong);
     document.querySelectorAll('.headButton').forEach((button)=>{
         button.addEventListener('click', changeOrder);
     });
@@ -814,30 +871,64 @@ TODO: Determine method for piano roll functionality (chrome-music-lab?)
     var btnPlay = document.getElementById("btnPlay");
     var btnPause = document.getElementById("btnPause");
     var btnBack = document.getElementById("btnBack");
+    var btnCount = document.getElementById("countTimeCase");
 
-    // Open the modal
+    // On-click functionality
     btnPlay.onclick = function() {
-        modal.className = "Modal is-visuallyHidden";
+        btnPlay.className = "backPlayPauseButton ButtonPress";
         setTimeout(function() {
-            console.log(container.className);
-            container.classList.add("is-blurred");
-            console.log(container.className);
-            modal.className = "Modal";
+            //console.log(container.className);
+            //container.classList.add("is-blurred");
+            //console.log(container.className);
+            btnPlay.className = "backPlayPauseButton is-hidden is-visuallyHidden";
+            btnPause.className = "backPlayPauseButton";
         }, 100);
 
     };
 
-    function playSong(ev){
-        if (libraryLoaded === false){
-            socket.emit('request song', 'now');
-            socket.on('send library', function (data) {
-                musicLibrary = data;
-                console.log(data.sort(function(a,b){
-                    return compareStrings(a.title,b.title);
-                }));
-                changeFilter(data,"allSongs");
+    btnPause.onclick = function() {
+        btnPause.className = "backPlayPauseButton ButtonPress";
+        setTimeout(function() {
+            //console.log(container.className);
+            //container.classList.add("is-blurred");
+            //console.log(container.className);
+            btnPause.className = "backPlayPauseButton is-hidden is-visuallyHidden";
+            btnPlay.className = "backPlayPauseButton";
+        }, 100);
+    };
+
+    async function playSong(ev){
+        // Start Countdown
+        var countdown = parseFloat(document.getElementById('countTime').textContent);
+        var i;
+        for (i = countdown; i >= 0; i--) {
+            //btnCount.claseName = "controlButton";
+            // Remember: await counts in ms
+            await new Promise(r => setTimeout(r, ((60.0/document.getElementById('userTempo').textContent)*1000)));
+            console.log(60.0/document.getElementById('userTempo').textContent);
+            document.getElementById('countTime').textContent = i;
+        }
+        document.getElementById('countTime').textContent = 'G';
+        await new Promise(r => setTimeout(r, ((60.0/document.getElementById('userTempo').textContent)*1000)));
+        document.getElementById('countTime').textContent = countdown;
+
+
+        // Send socket command to play song
+        const songLoaded = false;
+        if (songLoaded === false){
+            socket.emit('request play');
+            socket.on('send reset', function (data) {
+                console.log(data)
             });
-            libraryLoaded = true;
+        }
+    }
+    function resetSong(ev){
+        const songLoaded = false;
+        if (songLoaded === false){
+            socket.emit('request reset', 'songname', 'tempo');
+            socket.on('send reset', function (data) {
+                console.log(data)
+            });
         }
     }
 

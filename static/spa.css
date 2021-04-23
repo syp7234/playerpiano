@@ -128,7 +128,7 @@ html{
     width: 100%;
 }
 
-#controlsSection{
+.controlsSection{
     display: flex;
     flex-flow: row;
     background-color: #5f5f5f;
@@ -206,6 +206,10 @@ html{
     box-shadow: 0 0 30px rgba(0, 0, 0, 0.9);
     padding-top: 5px;
     padding-bottom: 5px;
+}
+
+.ButtonPress{
+    background-color: #f5f5f5;
 }
 
 .controlButton{
@@ -288,7 +292,7 @@ html{
     justify-content: center;
 }
 
-#noteSection{
+.noteSection{
     flex: 2 0 0;
     background-color: #252525;
     display: block;
