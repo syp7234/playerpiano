@@ -110,6 +110,15 @@ def playMidi(song_name, tempo=0):
     SCK = board.SCK
     MOSI = board.MOSI
     LATCH = digitalio.DigitalInOut(board.D5)
+    
+    HBRIDGE_A = digitalio.DigitalInOut(board.D6) # may need to be a different IO port
+    HBRIDGE_B = digitalio.DigitalInOut(board.D7) # may need to be a different IO port
+    PWMPIN = 12				
+    GPIO.setwarnings(False)			            #disable warnings
+    GPIO.setmode(GPIO.BOARD)		            #set pin numbering system
+    GPIO.setup(PWMPIN,GPIO.OUT)
+    pi_pwm = GPIO.PWM(ledpin,10000)		        #create PWM instance with frequency
+    pi_pwm.start(0)		
 
     # Initialize SPI bus.
     spi = busio.SPI(clock=SCK, MOSI=MOSI)
@@ -133,18 +142,35 @@ def playMidi(song_name, tempo=0):
 
     #print('Tick length: ' + str(tickLength))
     currentTick = 0
-    notesArray[0] = [0 for x in range(89)]
+    notesArray[0] = [0 for x in range(90)]
     lineIncrement = 0
+    
+    # Create notesArray (list of lists) out of midi messages
+    # ------------------------------------------------------
+    # Basic visual depiction of notesArray:
+    #                                        time --->
+    # lineIncrement:(index)  |       0       1      2       3    ...
+    #    pedalState:(bool)   |    [ [0       0      1       1
+    #    delayAfter:(sec)    |       0       0.1    0.3     0.4
+    #            /G:(vel)    |       000     000    000     000
+    #           / F:  |      |       000     000    000     000
+    #          /  E:  |      |       000     127    127     127
+    #     notes   D:  |      |       000     000    000     000 
+    #          \  C:  v      |       000     000    000     127  
+    #           \ B:         |       000     127    127     000
+    #            \A:         |       000]    000]   000]    000]  ... ]
+    
     for msg in mid:
         #print(msg)
+        # places velocity values in notesArray based on when notes occur simultaneously, and keeps track of delay between events. 
         if msg.type is 'note_on' or msg.type is 'note_off':
             delayAfter = int(floor(mido.second2tick(msg.time, mid.ticks_per_beat, tempo)))
-            if delayAfter == 0:
+            if delayAfter == 0: #simultaneous notes
                 if msg.note < 89:
-                    notesArray[lineIncrement][msg.note - 12] = msg.velocity
+                    notesArray[lineIncrement][msg.note - 12] = msg.velocity # should this 12 be set to KEY_OFFSET?
             else:
                 notesArray[lineIncrement][88] = delayAfter
-                notesArray.append([0 for x in range(89)])
+                notesArray.append([0 for x in range(90)])
                 for y in range(88) :
                     notesArray[lineIncrement+1][y] = notesArray[lineIncrement][y]
                 #notesArray.append(notesArray[lineIncrement])
@@ -153,11 +179,22 @@ def playMidi(song_name, tempo=0):
                 if msg.note < 89:
                     notesArray[lineIncrement][msg.note - 12] = msg.velocity
                     
-                notesArray.append([0 for x in range(89)])
+                notesArray.append([0 for x in range(90)])
                 for y in range(88) :
                     notesArray[lineIncrement+1][y] = notesArray[lineIncrement][y]
-                lineIncrement += 1                
+                lineIncrement += 1  
                 
+        # Saves state of pedal when sent a 'control_change' message for sustain pedal (CC #64)
+        elif msg.type is 'control_change' and msg.control is 64:
+            delayAfter = int(floor(mido.second2tick(msg.time, mid.ticks_per_beat, tempo)))
+            if msg.value > 63:
+                # in MIDI protocol 0-63=off, 64-127=on
+                pedalState = 1
+            else:
+                pedalState = 0
+        
+        notesArray[lineIncrement][-1] = pedalState # write pedalState as final value in each noteArray column.
+            
                 
                 
             """ Old code:
@@ -234,6 +271,15 @@ def playMidi(song_name, tempo=0):
         
         time.sleep(mido.tick2second(line[88], mid.ticks_per_beat, tempo) * 0.7)
         
+        if notesArray[z][90] == 0 and notesArray[z+1][90] == 1: # if sustain being activated next, start it 1 note early -- SUSTAIN ENGAGED
+            HBRIDGE_A.value = 1 
+            HBRDIGE_B.value = 0
+            # Stop after 0.5 seconds - thread
+        if notesArray[z][90] == 1 and notesArray[z+1][90] == 0: # SUSTAIN DISENGAGED
+            HBRIDGE_A.value = 0 
+            HBRDIGE_B.value = 1
+            # Stop after 0.5 seconds - thread
+        
         for x in range(88):
             if notesArray[z+1][x] == 0:
                 # If the note goes down, set it down early
@@ -242,9 +288,12 @@ def playMidi(song_name, tempo=0):
         
         time.sleep(mido.tick2second(line[88], mid.ticks_per_beat, tempo) * 0.3)
         
+        
+            
     for x in range(88):
         tlc5947[x] = 0
     tlc5947.write()
+    
 
 
 def main():
