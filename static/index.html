@@ -17,6 +17,7 @@ TODO: Determine method for piano roll functionality (chrome-music-lab?)
 <script>
     let musicLibrary = '';
     let currentLibrary = '';
+    let musicLibraryIndex = [];
 </script>
 <main>
     <div class="page active" id="menu">
@@ -306,99 +307,99 @@ TODO: Determine method for piano roll functionality (chrome-music-lab?)
                 <div class="controlCase">
                     <!-- Hand and Tempo Selection -->
                     <div class="upDownCase">
-                        <div class="controlButton"><img
+                        <div class="controlButton ButtonUnPress" id="btnLeftHand"><img
                                 src="./images/l_hand.svg"
                                 class="centerImage"
                                 alt="left hand"
-                                height="87"
-                                width="100" /></div>
+                                height=100%
+                                width=100% /></div>
                         <div class="upDownTextCase">
                             <div class="controlsText"> Left Hand or Right Hand </div>
                         </div>
-                        <div class="controlButton"><img
+                        <div class="controlButton ButtonUnPress" id="btnRightHand"><img
                                 src="./images/r_hand.svg"
                                 alt="right hand"
                                 class="centerImage"
-                                height="87"
-                                width="100" /></div>
+                                height=100%
+                                width=100% /></div>
                     </div>
                     <div class="upDownCase">
-                        <div class="controlButton"><img
+                        <div class="controlButton ButtonUnPress" id="btnTempoDown"><img
                                 src="./images/down.svg"
                                 alt="DOWN"
                                 class="centerImage"
-                                height="87"
-                                width="100" /></div>
+                                height=100%
+                                width=100% /></div>
                         <div class="upDownTextCase">
                             <div class="controlsText">Tempo:</div>
                             <div class="controlsText"><var id="userTempo">120</var></div>
                         </div>
-                        <div class="controlButton"><img
+                        <div class="controlButton ButtonUnPress" id="btnTempoUp"><img
                                 src="./images/up.svg"
                                 alt="UP"
                                 class="centerImage"
-                                height="87"
-                                width="100" /></div>
+                                height=100%
+                                width=100% /></div>
                     </div>
                 </div>
                 <!-- Title, Back, Play, Pause Controls -->
                 <div class="controlCase">
                     <div class="upDownCase">
-                        <div class="controlsTitleText"><var id="titleName">TITLE GOES HERE</var></div>
+                        <div class="TitleText"><var id="titleName">TITLE GOES HERE</var></div>
                     </div>
                     <button class="backPlayPauseButton nav-link" id="btnBack" data-target="library">
                         <img
                                 src="./images/back.svg"
                                 alt="Back"
                                 class="centerImage"
-                                height="87"
-                                width="100" />
+                                height=100%
+                                width=100% />
                     </button>
                     <button class="backPlayPauseButton" id="btnPlay">
                         <img
                                 src="./images/play.svg"
                                 alt="Play"
                                 class="centerImage"
-                                height="87"
-                                width="100" />
+                                height=100%
+                                width=100% />
                     </button>
                     <button class="backPlayPauseButton is-hidden is-visuallyHidden" id="btnPause">
                         <img
                                 src="./images/pause.svg"
                                 alt="Pause"
                                 class="centerImage"
-                                height="87"
-                                width="100" />
+                                height=100%
+                                width=100% />
                     </button>
                     <button class="backPlayPauseButton" id="btnRecord">
                         <img
                                 src="./images/record-button.svg"
                                 alt="Record"
                                 class="centerImage"
-                                height="87"
-                                width="75" />
+                                height=80%
+                                width=80% />
                     </button>
                 </div>
                 <!-- Title, Back, Play, Pause, Record Controls -->
                 <div class="controlCase">
                     <div class="centeredCase">
                         <div class="controlsTitleText">Count-In</div>
-                        <div class="controlButton" id="countTimeCase"><var id="countTime">8</var></div>
+                        <div class="controlButton ButtonUnPress" id="countTimeCase"><var id="countTime">8</var></div>
                     </div>
                     <div class="centeredCase">
-                        <div class="controlButton"><img
+                        <div class="controlButton ButtonUnPress" id=btnVolDown><img
                                 src="./images/down.svg"
                                 alt="DOWN"
                                 class="centerImage"
-                                height="87"
-                                width="100" /></div>
-                        <div class="controlsTitleText">Volume</div>
-                        <div class="controlButton"><img
+                                height=100%
+                                width=100% /></div>
+                        <div class="controlsTitleText">Volume@<var id="volNum">5</var></div>
+                        <div class="controlButton ButtonUnPress" id=btnVolUp><img
                                 src="./images/up.svg"
                                 alt="UP"
                                 class="centerImage"
-                                height="87"
-                                width="100" /></div>
+                                height=100%
+                                width=100% /></div>
                     </div>
                 </div>
             </div>
@@ -437,7 +438,7 @@ TODO: Determine method for piano roll functionality (chrome-music-lab?)
                 <div class="controlCase">
                     <div class="centeredCase">
                         <div class="controlsTitleText">Count-In</div>
-                        <div class="controlButton">3</div>
+                        <div class="controlButton ButtonUnPress">3</div>
                     </div>
                 </div>
             </div>
@@ -758,7 +759,7 @@ TODO: Determine method for piano roll functionality (chrome-music-lab?)
         ev.preventDefault();
         let newList = ev.currentTarget.getAttribute('id');
         document.querySelector('.shown').style.backgroundColor = "#252525";
-        document.querySelector('.shown').style.textShadow = "0px 0px 0px #000000";;
+        document.querySelector('.shown').style.textShadow = "0px 0px 0px #000000";
         document.querySelector('.shown').classList.remove('shown');
         document.getElementById(newList).classList.add('shown');
         document.querySelector('.shown').style.backgroundColor = "#6f6f6f";
@@ -830,8 +831,16 @@ TODO: Determine method for piano roll functionality (chrome-music-lab?)
         // Get the original tempo from song
         const songLoaded = false;
         if (songLoaded === false){
+            let filepath;
             // Send the title to grab the original tempo, and begin loading the song with original tempo
-            socket.emit('request songpreproc', document.getElementById('titleName').textContent,
+            console.log(musicLibrary);
+            for (var musicIdx in musicLibrary){  // Grab the filepath for the music
+                if(String(document.getElementById('titleName').textContent) === String(musicLibrary[musicIdx].title)){
+                    filepath = musicLibrary[musicIdx].pathToMidi;
+                    console.log(filepath)
+                }
+            }
+            socket.emit('request songpreproc', filepath,
                 document.getElementById('userTempo').textContent);
             // Receive the base tempo of the song and set accordingly
             socket.on('send songpreproc', function (tempo) {
@@ -839,13 +848,6 @@ TODO: Determine method for piano roll functionality (chrome-music-lab?)
             });
         }
 
-        // Start song pre-processing
-        if (songLoaded === false){
-            socket.emit('request song', titleName, 'tempo');
-            socket.on('send song', function (data) {
-                console.log(data)
-            });
-        }
     };
     $('input[type=file]').change(function (e) {
         $('#customfileupload').html($(this).val());
@@ -864,6 +866,10 @@ TODO: Determine method for piano roll functionality (chrome-music-lab?)
     document.getElementById('btnPlay').addEventListener("click",playSong);
     document.getElementById('btnPause').addEventListener("click",resetSong);
     document.getElementById('btnBack').addEventListener("click",resetSong);
+    document.getElementById('btnTempoUp').addEventListener("click",tempoChangeUp);
+    document.getElementById('btnTempoDown').addEventListener("click",tempoChangeDown);
+    document.getElementById('btnVolUp').addEventListener("click",volChangeUp);
+    document.getElementById('btnVolDown').addEventListener("click",volChangeDown);
     document.querySelectorAll('.headButton').forEach((button)=>{
         button.addEventListener('click', changeOrder);
     });
@@ -872,14 +878,17 @@ TODO: Determine method for piano roll functionality (chrome-music-lab?)
     var btnPause = document.getElementById("btnPause");
     var btnBack = document.getElementById("btnBack");
     var btnCount = document.getElementById("countTimeCase");
+    var btnTempoUp = document.getElementById("btnTempoUp");
+    var btnTempoDown = document.getElementById("btnTempoDown");
+    var btnLeftHand = document.getElementById("btnLeftHand");
+    var btnRightHand = document.getElementById("btnRightHand");
+    var btnVolUp = document.getElementById("btnVolUp");
+    var btnVolDown = document.getElementById("btnVolDown");
 
     // On-click functionality
     btnPlay.onclick = function() {
         btnPlay.className = "backPlayPauseButton ButtonPress";
         setTimeout(function() {
-            //console.log(container.className);
-            //container.classList.add("is-blurred");
-            //console.log(container.className);
             btnPlay.className = "backPlayPauseButton is-hidden is-visuallyHidden";
             btnPause.className = "backPlayPauseButton";
         }, 100);
@@ -889,12 +898,60 @@ TODO: Determine method for piano roll functionality (chrome-music-lab?)
     btnPause.onclick = function() {
         btnPause.className = "backPlayPauseButton ButtonPress";
         setTimeout(function() {
-            //console.log(container.className);
-            //container.classList.add("is-blurred");
-            //console.log(container.className);
             btnPause.className = "backPlayPauseButton is-hidden is-visuallyHidden";
             btnPlay.className = "backPlayPauseButton";
         }, 100);
+    };
+
+    btnTempoUp.onclick = function() {
+        btnTempoUp.className = "controlButton ButtonPress";
+        setTimeout(function() {
+            btnTempoUp.className = "controlButton ButtonUnPress";
+        }, 100);
+    };
+
+    btnTempoDown.onclick = function() {
+        btnTempoDown.className = "controlButton ButtonPress";
+        setTimeout(function() {
+            btnTempoDown.className = "controlButton ButtonUnPress";
+        }, 100);
+    };
+
+    btnVolUp.onclick = function() {
+        btnVolUp.className = "controlButton ButtonPress";
+        setTimeout(function() {
+            btnVolUp.className = "controlButton ButtonUnPress";
+        }, 100);
+    };
+
+    btnVolDown.onclick = function() {
+        btnVolDown.className = "controlButton ButtonPress";
+        setTimeout(function() {
+            btnVolDown.className = "controlButton ButtonUnPress";
+        }, 100);
+    };
+
+    btnLeftHand.onclick = function() {
+        if(btnLeftHand.className === "controlButton ButtonUnPress"){
+            btnLeftHand.className = "controlButton ButtonPress";
+            btnRightHand.className = "controlButton ButtonUnPress";
+        }
+        else{
+            btnLeftHand.className = "controlButton ButtonUnPress";
+            btnRightHand.className = "controlButton ButtonUnPress";
+        }
+    };
+
+    btnRightHand.onclick = function() {
+        if(btnRightHand.className === "controlButton ButtonUnPress"){
+            btnRightHand.className = "controlButton ButtonPress";
+            btnLeftHand.className = "controlButton ButtonUnPress";
+        }
+        else{
+            btnLeftHand.className = "controlButton ButtonUnPress";
+            btnRightHand.className = "controlButton ButtonUnPress";
+        }
+
     };
 
     async function playSong(ev){
@@ -917,21 +974,42 @@ TODO: Determine method for piano roll functionality (chrome-music-lab?)
         const songLoaded = false;
         if (songLoaded === false){
             socket.emit('request play');
-            socket.on('send reset', function (data) {
+            socket.on('send play', function (data) {
                 console.log(data)
             });
         }
     }
-    function resetSong(ev){
+    function resetSong(){
         const songLoaded = false;
         if (songLoaded === false){
-            socket.emit('request reset', 'songname', 'tempo');
+            socket.emit('request reset');
             socket.on('send reset', function (data) {
                 console.log(data)
             });
         }
     }
 
+    function tempoChangeUp(){
+        document.getElementById('userTempo').textContent=
+            String(parseInt(document.getElementById('userTempo').textContent)+1);
+    }
+    function tempoChangeDown(){
+        document.getElementById('userTempo').textContent=
+            String(parseInt(document.getElementById('userTempo').textContent)-1);
+    }
+
+    function volChangeUp(){
+        if (parseInt(document.getElementById('volNum').textContent)<11){
+            document.getElementById('volNum').textContent=
+                String(parseInt(document.getElementById('volNum').textContent)+1);
+        }
+    }
+    function volChangeDown() {
+        if (parseInt(document.getElementById('volNum').textContent)>0){
+            document.getElementById('volNum').textContent =
+                String(parseInt(document.getElementById('volNum').textContent) - 1);
+        }
+    }
 </script>
 
 </body>

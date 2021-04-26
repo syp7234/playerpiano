@@ -27,8 +27,9 @@ io.on('connection', function(socket){
 
     // Provide the browser with a list of all available songs
     socket.on('request library', function (data) {
-        console.log(data);
+        //console.log(data);
         let library = JSON.parse(rawData);
+        //console.log(library[0].duration);
         socket.emit('send library', library);
     });
 
@@ -37,50 +38,52 @@ io.on('connection', function(socket){
         currSongProc = false; // Instantiate child process as 'false' for redundancy check
 
         const { spawn } = require('child_process');
-        const tempoThread = spawn('python', ['play_midi.py tempo']); // play_midi.py tempo
+
+        const reset = spawn('python', ['play_midi.py', 'reset']); // play_midi.py reset
+        reset.stdout.on('data', function(data) {
+            console.log(String(data));
+        });
+
+
+        const tempoThread = spawn('python', ['play_midi.py', 'tempo', songname]); // play_midi.py tempo
         tempoThread.stdout.on('data', function(data) {
             // Convert to string and emit tempo back to webpage
-            console.log(data);
+            console.log(String(data));
             socket.emit('send songpreproc', String(data));
         });
-        currSongProc = spawn('python', ['play_midi.py play songname tempo']); // play_midi.py play 'songname' tempo
+
+        currSongProc = spawn('python', ['play_midi.py', 'play', songname]); // play_midi.py play 'songname' tempo
+        currSongProc.stdout.on('data', function(data) {
+            console.log(String(data));
+        });
 
         //socket.emit('send songpreproc', tempo);
-    });
-
-    // Perform the Play action and play the song -- NOTE: currently done via file polling - TODO: convert to django framework
-    // 'p' file is created to continue to play while 'x' file creation exits the python script
-    socket.on('request song', function(songname, tempo) {
-        //console.log(songname, tempo);  // Song name and tempo provided
-        currSongProc = false; // Instantiate child process as 'false' for redundancy check
-
-        const { spawn } = require('child_process');
-        const reset = spawn('python', ['play_midi.py reset']); // play_midi.py reset
-
-        currSongProc = spawn('python', ['play_midi.py play songname tempo']); // play_midi.py play songname tempo
-
-        socket.emit('send song', 'exit');
     });
 
     // Reset the whole system in a separate procedure
     socket.on('request reset', (data) => {
         //console.log(data);  // Nothing should be provided, but I'm curious to see what if any
+        console.log("SONG RESET");
         if (currSongProc !== false) {
             currSongProc.kill('SIGINT');
         }
         const { spawn } = require('child_process');
-        const reset = spawn('python', ['play_midi.py reset']); // play_midi.py reset
+        const reset = spawn('python', ['play_midi.py', 'reset']); // play_midi.py reset
 
         socket.emit('send reset', 'exit');
+
+        currSongProc = false;
     });
 
     // Create a file to play
+    // Perform the Play action and play the song -- NOTE: currently done via file polling - TODO: convert to django framework
+    // 'p' file is created to continue to play while 'x' file creation exits the python script
     socket.on('request play', (data) => {
         fs.open('p', 'w', function (err, file) {
             if (err) throw err;
             console.log('Created');
         });
 
-        socket.emit('send reset', 'exit');
+        socket.emit('send play', 'exit');
     });
 });

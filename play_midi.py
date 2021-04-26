@@ -4,6 +4,7 @@ Originated: 19363
     Author: Curtis Geiger
 Adapted: 21363
     Author: Steven Petrick
+            Josiah Martuscello
 
 MIDI interpetation and play functionality
 Meant to be threaded via server JavaScript to perform MIDI play
@@ -16,10 +17,14 @@ import time
 import threading
 from math import floor
 
+
 import board
 import busio
 import digitalio
 import adafruit_tlc5947
+import RPi.GPIO as GPIO
+
+
 
 # Key Offset refers to the note difference between MIDI Start(C0) and Piano Start(A0)
 KEY_OFFSET = 9
@@ -32,6 +37,7 @@ calFile = 'key_calibrations.txt'
 
 
 def reset_key():
+    """
     SCK = board.SCK
     MOSI = board.MOSI
     LATCH = digitalio.DigitalInOut(board.D5)
@@ -45,6 +51,9 @@ def reset_key():
     for x in range(88):
         tlc5947[x] = 0
     tlc5947.write()
+    :return:
+    """
+    print("RESET")
 
 
 def gen_calibration_file():
@@ -52,7 +61,7 @@ def gen_calibration_file():
     Generates a calibration file with assumed PWM minimums give by the global
     :return:
     """
-    file = open(calFile, 'r')
+    file = open(calFile, 'w')
     for num in range(88):
         file.write(str(num)+","+str(PWM_MIN)+"\n")
     file.close()
@@ -68,19 +77,21 @@ def read_calibration_file():
     for line in file.readlines():
         stripLine = line.rstrip()
         if line != "":
-            noteMinDict[int(stripLine.split[","][0])] = int(stripLine.split[","][1])
+            noteMinDict[int(stripLine.split(",")[0])] = int(stripLine.split(",")[1])
     file.close()
     return noteMinDict
 
-def getTempo(song_name):
+
+def getTempo(song_path):
     """
     Method to ge the original tempo of a song from and return it
-    :param song_name: Song to get the original set tempo from
+    :param song_path: Song to get the original set tempo from
     :return: server searches STDOUT pipe for tempo response - CAREFUL WITH PRINT STATEMENTS
     """
-    if not os.path.exists('midifiles/' + song_name):
-        sys.exit("Song Provided does not exist")  # Redundant Check - song wouldn't be selectable if it doesn't exist
-    mid = mido.MidiFile('midifiles/' + song_name)
+    if not os.path.exists(song_path):
+        print("Song provided does not exist")
+        sys.exit("Song provided does not exist")  # Redundant Check - song wouldn't be selectable if it doesn't exist
+    mid = mido.MidiFile(song_path)
 
     tempo = 0
 
@@ -88,40 +99,45 @@ def getTempo(song_name):
         if msg.is_meta and msg.type == 'set_tempo':
             tempo = int(msg.tempo)
             break
-    print(tempo)
+    print(int(mido.tempo2bpm(tempo)))
 
-    def actuateSustainPedal(dir):
-        """
-        Thread trigger function for the sustain pedal - clockwise is UP, counter-clockwise is DOWN
-        :param dir: direction to actuate the pedal - INT - 1 for UP, 0 for DOWN
-        :return: None
-        """
-        HBRIDGE_A = digitalio.DigitalInOut(board.D6) # may need to be a different IO port
-        HBRIDGE_B = digitalio.DigitalInOut(board.D7) # may need to be a different IO port
 
-        if dir == 1:
-            HBRIDGE_A.value = True
-            HBRIDGE_B.value = False
-            time.sleep(0.5)  # Time for sustain pedal to actuate - UP
-            HBRIDGE_A.value = False
-            HBRIDGE_B.value = False
-        else:
-            HBRIDGE_A.value = False
-            HBRIDGE_B.value = True
-            time.sleep(0.5)  # Time for sustain pedal to actuate - DOWN
-            HBRIDGE_A.value = False
-            HBRIDGE_B.value = False
+def actuateSustainPedal(dir):
+    """
+    Thread trigger function for the sustain pedal - clockwise is UP, counter-clockwise is DOWN
+    :param dir: direction to actuate the pedal - INT - 1 for UP, 0 for DOWN
+    :return: None
+    """
 
-def playMidi(song_name, tempo=0):
+
+    HBRIDGE_A = digitalio.DigitalInOut(board.D6) # may need to be a different IO port
+    HBRIDGE_B = digitalio.DigitalInOut(board.D7) # may need to be a different IO port
+
+    if dir == 1:
+        HBRIDGE_A.value = True
+        HBRIDGE_B.value = False
+        time.sleep(0.5)  # Time for sustain pedal to actuate - UP
+        HBRIDGE_A.value = False
+        HBRIDGE_B.value = False
+    else:
+        HBRIDGE_A.value = False
+        HBRIDGE_B.value = True
+        time.sleep(0.5)  # Time for sustain pedal to actuate - DOWN
+        HBRIDGE_A.value = False
+        HBRIDGE_B.value = False
+
+    print("PEDAL ACTUATED")
+
+def playMidi(song_path, bpm=0):
     """
     The main MIDI playback function
-    :param song_name: song in which to extract metadata from
-    :param tempo: OVERWRITE tempo, 0 otherwise to set to tempo found in metadata
+    :param song_path: song in which to extract metadata from
+    :param bpm: OVERWRITE tempo, 0 otherwise to set to tempo found in metadata
     :return:
     """
-    if not os.path.exists('midifiles/' + song_name):
+    if not os.path.exists(song_path):
         sys.exit("Song Provided does not exist")  # Redundant Check - song wouldn't be selectable if it doesn't exist
-    mid = mido.MidiFile('midifiles/' + song_name)
+    mid = mido.MidiFile(song_path)
 
     notesDict = {'songName': 'testname', 'bpm': 999, 'notes': []}
     length = 0
@@ -129,6 +145,7 @@ def playMidi(song_name, tempo=0):
     tickLength = 0
     VOLUME = 4
     MIN = 800
+
 
     SCK = board.SCK
     MOSI = board.MOSI
@@ -153,15 +170,19 @@ def playMidi(song_name, tempo=0):
         tlc5947[x] = 0
     tlc5947.write()
 
+    if bpm != 0:  # If there is a bpm provided, convert to mido tempo
+       tempo = mido.bpm2tempo(bpm)
+
     for msg in mid:
         if msg.is_meta and msg.type == 'set_tempo':
-            if tempo != 0: # If there is an overwriting tempo given to the function, ignore metadata
+            if bpm == 0:  # If there is an overwriting tempo given to the function, ignore metadata
                 tempo = int(msg.tempo)
             length = int(floor(mido.second2tick(mid.length,
                                                 mid.ticks_per_beat,
                                                 tempo)))
             tickLength = mido.tick2second(1, mid.ticks_per_beat, tempo)
-            break
+            #break
+        # print(msg)
 
     #print('Tick length: ' + str(tickLength))
     currentTick = 0
@@ -184,31 +205,30 @@ def playMidi(song_name, tempo=0):
     #            \A:         |       000]    000]   000]    000]  ... ]
     
     for msg in mid:
-        #print(msg)
         # places velocity values in notesArray based on when notes occur simultaneously, and keeps track of delay between events. 
         if msg.type is 'note_on' or msg.type is 'note_off':
             delayAfter = int(floor(mido.second2tick(msg.time, mid.ticks_per_beat, tempo)))
             if delayAfter == 0: #simultaneous notes
                 if msg.note < 89:
-                    notesArray[lineIncrement][msg.note - 12] = msg.velocity # should this 12 be set to KEY_OFFSET?
+                    notesArray[lineIncrement][msg.note - 12] = msg.velocity  # should this 12 be set to KEY_OFFSET?
             else:
                 notesArray[lineIncrement][88] = delayAfter
                 notesArray.append([0 for x in range(90)])
-                for y in range(88) :
+                for y in range(88):
                     notesArray[lineIncrement+1][y] = notesArray[lineIncrement][y]
                 #notesArray.append(notesArray[lineIncrement])
                 lineIncrement += 1
-                notesArray[lineIncrement][88] = 0
+                # notesArray[lineIncrement][88] = 0
                 if msg.note < 89:
                     notesArray[lineIncrement][msg.note - 12] = msg.velocity
                     
-                notesArray.append([0 for x in range(90)])
-                for y in range(88) :
-                    notesArray[lineIncrement+1][y] = notesArray[lineIncrement][y]
-                lineIncrement += 1  
+                # notesArray.append([0 for x in range(90)])
+                # for y in range(88):
+                #     notesArray[lineIncrement+1][y] = notesArray[lineIncrement][y]
+                # lineIncrement += 1
                 
         # Saves state of pedal when sent a 'control_change' message for sustain pedal (CC #64)
-        elif msg.type is 'control_change' and msg.control is 64:
+        elif msg.type is 'control_change' and msg.control == 64:
             delayAfter = int(floor(mido.second2tick(msg.time, mid.ticks_per_beat, tempo)))
             if msg.value > 63:
                 # in MIDI protocol 0-63=off, 64-127=on
@@ -216,25 +236,7 @@ def playMidi(song_name, tempo=0):
             else:
                 pedalState = 0
         
-        notesArray[lineIncrement][-1] = pedalState # write pedalState as final value in each noteArray column.
-            
-                
-                
-            """ Old code:
-                for x in range (newNote['delayAfter']):
-                    if x != 0:
-                        notesArray[x+currentTick] = notesArray[x+currentTick-1]
-                currentTick += newNote['delayAfter']
-                
-            notesArray[currentTick][newNote['note'] - 1] = newNote['velocity']
-            # tlc5947.write()
-            notesDict['notes'].append(newNote)
-            """
-            
-    """ ""
-    with open('notes.json', 'w') as outfile:
-        json.dump(notesDict, outfile)
-    """
+            notesArray[lineIncrement][-1] = pedalState  # write pedalState as final value in each noteArray column.
 
     # Velocity to PWM
     # 1-126 -> MIN PWM (2048) - 4096 | Assuming linear scale
@@ -256,48 +258,40 @@ def playMidi(song_name, tempo=0):
         sys.exit("Failed to read/generate calibration file. Please check file generation and reading functions.")
 
     startTime = time.time()
-    tlc5947.write()
-    # COUNT-IN WAIT IS PERFORMED HERE - DONE TEMPORARILY VIA FILE POLLING - EXPECTED TO BE
+    # tlc5947.write()
+    # COUNT-IN WAIT IS PERFORMED HERE - DONE TEMPORARILY VIA FILE POLLING
     # TODO: Replace by Django Webframework
     while 1:
-        if os.path.exists('p'):
-            os.remove('p')
+        if os.path.exists('./p'):
+            os.remove('./p')
             break
-        elif os.path.exists('x'):
-            os.remove('x')
+        elif os.path.exists('./x'):
+            os.remove('./x')
             sys.exit()
-        elif (time.time()-startTime)==1800:
+        elif (time.time()-startTime) == 1800:
             sys.exit()  # After 30 minutes, timeout
 
-    for z in range(0, len(notesArray)-1, 2):
+    for z in range(0, len(notesArray)-1, 1):
         line = notesArray[z]
-        """
-        tlc5947[27] = 900
-        tlc5947[68] = 4000
-        tlc5947.write()
-        time.sleep(2)
-        tlc5947[27] = 0
-        tlc5947[68] = 0
-        tlc5947.write()
-        time.sleep(2)
-        """
-        
-        #print(line)
+
         # send array to PWM IC
-        for x in range(len(line) - 1):
+        for x in range(88):  # Go through all 88 keys
             if line[x] != 0:
                 tlc5947[x] = round((((line[x] - velMin) * (PWMMax - notesMinDict[x])) / (velMax - velMin)) + notesMinDict[x])
+                # print(round((((line[x] - velMin) * (PWMMax - notesMinDict[x])) / (velMax - velMin)) + notesMinDict[x]))
             else:
                 tlc5947[x] = 0
+                continue
         tlc5947.write()
         # time.sleep(tickLength)
+
+        print(mido.tick2second(line[88], mid.ticks_per_beat, tempo))
+        time.sleep(mido.tick2second(line[88], mid.ticks_per_beat, tempo) * 0.3)
         
-        time.sleep(mido.tick2second(line[88], mid.ticks_per_beat, tempo) * 0.7)
-        
-        if notesArray[z][90] == 0 and notesArray[z+1][90] == 1: # if sustain being activated next, start it 1 note early -- SUSTAIN ENGAGED
+        if notesArray[z][89] == 0 and notesArray[z+1][89] == 1:  # if sustain being activated next, start it 1 note early -- SUSTAIN ENGAGED
             act = threading.Thread(target=actuateSustainPedal, args=(1,))
             act.start()
-        if notesArray[z][90] == 1 and notesArray[z+1][90] == 0: # SUSTAIN DISENGAGED
+        if notesArray[z][89] == 1 and notesArray[z+1][89] == 0:  # SUSTAIN DISENGAGED
             act = threading.Thread(target=actuateSustainPedal, args=(0,))
             act.start()
         
@@ -305,17 +299,13 @@ def playMidi(song_name, tempo=0):
             if notesArray[z+1][x] == 0:
                 # If the note goes down, set it down early
                 tlc5947[x] = notesArray[z+1][x]
+                continue
         tlc5947.write()
         
-        time.sleep(mido.tick2second(line[88], mid.ticks_per_beat, tempo) * 0.3)
+        time.sleep(mido.tick2second(line[88], mid.ticks_per_beat, tempo) * 0.7)
         
-        
-            
-    for x in range(88):
-        tlc5947[x] = 0
-    tlc5947.write()
+    reset_key()
     
-
 
 def main():
     """
@@ -327,21 +317,20 @@ def main():
     numArg = len(sys.argv)
     if numArg >= 2:
         cmd = sys.argv[1]
-    elif cmd is 'reset':
-        reset_key()
-    elif cmd is 'tempo' and numArg >= 3:
-        songname = sys.argv[2]
-        getTempo(songname)
-    elif cmd is 'play' and numArg >= 3:
-        songname = sys.argv[2]
-        tempo = 0
-        if numArg >= 4:
-            tempo = int(sys.argv[3])
-        reset_key()  # Redundant key reset
-        playMidi(songname, tempo)
+        if cmd == 'reset':
+            reset_key()
+        elif cmd == 'tempo' and numArg >= 3:
+            songname = sys.argv[2]
+            getTempo(songname)
+        elif cmd == 'play' and numArg >= 3:
+            songname = sys.argv[2]
+            tempo = 0
+            if numArg >= 4:
+                tempo = int(sys.argv[3])
+            reset_key()  # Redundant key reset
+            playMidi(songname, tempo)
     else:
-        sys.exit("Please insert command as argument. reset, play songname opt:tempo]")
-
+        sys.exit("Please insert command as argument. reset, play songname opt:tempo, tempo")
 
 
 if __name__ == "__main__":
