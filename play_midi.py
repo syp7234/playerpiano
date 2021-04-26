@@ -37,7 +37,6 @@ calFile = 'key_calibrations.txt'
 
 
 def reset_key():
-    """
     SCK = board.SCK
     MOSI = board.MOSI
     LATCH = digitalio.DigitalInOut(board.D5)
@@ -51,8 +50,7 @@ def reset_key():
     for x in range(88):
         tlc5947[x] = 0
     tlc5947.write()
-    :return:
-    """
+
     print("RESET")
 
 
@@ -109,24 +107,33 @@ def actuateSustainPedal(dir):
     :return: None
     """
 
+    PWMPIN = 12
+    GPIO.setwarnings(False)			            #disable warnings
+    # GPIO.setmode(GPIO.BOARD)		            #set pin numbering system
+    GPIO.setup(PWMPIN,GPIO.OUT)
+    pi_pwm = GPIO.PWM(PWMPIN,10000)		        #create PWM instance with frequency
+    pi_pwm.start(0)
 
     HBRIDGE_A = digitalio.DigitalInOut(board.D6) # may need to be a different IO port
     HBRIDGE_B = digitalio.DigitalInOut(board.D7) # may need to be a different IO port
+    HBRIDGE_A.direction = digitalio.Direction.OUTPUT
+    HBRIDGE_B.direction = digitalio.Direction.OUTPUT
+
 
     if dir == 1:
         HBRIDGE_A.value = True
         HBRIDGE_B.value = False
-        time.sleep(0.5)  # Time for sustain pedal to actuate - UP
+        time.sleep(1)  # Time for sustain pedal to actuate - UP
         HBRIDGE_A.value = False
         HBRIDGE_B.value = False
     else:
         HBRIDGE_A.value = False
         HBRIDGE_B.value = True
-        time.sleep(0.5)  # Time for sustain pedal to actuate - DOWN
+        time.sleep(2)  # Time for sustain pedal to actuate - DOWN
         HBRIDGE_A.value = False
         HBRIDGE_B.value = False
 
-    print("PEDAL ACTUATED")
+        print("PEDAL ACTUATED")
 
 def playMidi(song_path, bpm=0):
     """
@@ -153,12 +160,6 @@ def playMidi(song_path, bpm=0):
     
     HBRIDGE_A = digitalio.DigitalInOut(board.D6) # may need to be a different IO port
     HBRIDGE_B = digitalio.DigitalInOut(board.D7) # may need to be a different IO port
-    PWMPIN = 12				
-    GPIO.setwarnings(False)			            #disable warnings
-    GPIO.setmode(GPIO.BOARD)		            #set pin numbering system
-    GPIO.setup(PWMPIN,GPIO.OUT)
-    pi_pwm = GPIO.PWM(ledpin,10000)		        #create PWM instance with frequency
-    pi_pwm.start(0)		
 
     # Initialize SPI bus.
     spi = busio.SPI(clock=SCK, MOSI=MOSI)
@@ -319,6 +320,12 @@ def main():
         cmd = sys.argv[1]
         if cmd == 'reset':
             reset_key()
+        elif cmd == 'sustain':
+            print("Actuate")
+            actuateSustainPedal(1)
+            time.sleep(3)
+            print("De-actuate")
+            actuateSustainPedal(0)
         elif cmd == 'tempo' and numArg >= 3:
             songname = sys.argv[2]
             getTempo(songname)

@@ -39,20 +39,20 @@ io.on('connection', function(socket){
 
         const { spawn } = require('child_process');
 
-        const reset = spawn('python', ['play_midi.py', 'reset']); // play_midi.py reset
+        const reset = spawn('python3', ['play_midi.py', 'reset']); // play_midi.py reset
         reset.stdout.on('data', function(data) {
             console.log(String(data));
         });
 
 
-        const tempoThread = spawn('python', ['play_midi.py', 'tempo', songname]); // play_midi.py tempo
+        const tempoThread = spawn('python3', ['play_midi.py', 'tempo', songname]); // play_midi.py tempo
         tempoThread.stdout.on('data', function(data) {
             // Convert to string and emit tempo back to webpage
             console.log(String(data));
             socket.emit('send songpreproc', String(data));
         });
 
-        currSongProc = spawn('python', ['play_midi.py', 'play', songname]); // play_midi.py play 'songname' tempo
+        currSongProc = spawn('python3', ['play_midi.py', 'play', songname]); // play_midi.py play 'songname' tempo
         currSongProc.stdout.on('data', function(data) {
             console.log(String(data));
         });
@@ -68,7 +68,7 @@ io.on('connection', function(socket){
             currSongProc.kill('SIGINT');
         }
         const { spawn } = require('child_process');
-        const reset = spawn('python', ['play_midi.py', 'reset']); // play_midi.py reset
+        const reset = spawn('python3', ['play_midi.py', 'reset']); // play_midi.py reset
 
         socket.emit('send reset', 'exit');
 
