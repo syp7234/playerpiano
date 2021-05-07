@@ -8,6 +8,26 @@ Adapted: 21363
 
 MIDI interpetation and play functionality
 Meant to be threaded via server JavaScript to perform MIDI play
+------------------
+Example Usages:
+Play Doctor Who midifile - note: you need the relative or absolute filepath name to the midifile
+python3 play_midi.py play ./midifiles/DoctorWho.mid
+
+Play Pirates at a specific tempo @ 160
+python3 play_midi.py play ./midifiles/DoctorWho.mid 160
+
+Print the tempo of Sweden
+python3 play_midi.py tempo ./midifiles/DoctorWho.mid
+
+Reset all keys
+python3 play_midi.py reset
+-------------------
+
+Notes for usage:
+To stop the play mid-playback: Ctrl-C
+******************************
+IMPORTANT: AFTER STOPPING MID-PLAY -> RUN RESET -> python3 play_midi.py reset 
+    Solenoids emit a mechanical whine if still attempting to actuate - reset the solenoids to prevent damage 
 """
 import mido
 import sys
@@ -29,7 +49,7 @@ import RPi.GPIO as GPIO
 # Key Offset refers to the note difference between MIDI Start(C0) and Piano Start(A0)
 KEY_OFFSET = 9
 
-# The global PWM minimum for default usage if piano is not calibrated
+# The global PWM minimum for default usage if piano is not calibrated - cannot exceed 4096
 PWM_MIN = 2048
 
 # Calibration file name and location - CSV
