@@ -16,6 +16,7 @@ Dated: 2/16/2021
 
 * Help Screen
 
+* Record Screen
 
 #### Server-PWM System (SPS)
 * MIDI File Parsing and Communication
@@ -70,6 +71,10 @@ In process, it looks like the following: selection of dynamic e.g. fff > play no
 1. Help Screen
 
 Consists of a full/half-page of the general get-started information for the user. 
+
+1. Record Screen
+
+Manaual implementation of: https://piano-scribe.glitch.me/
 
 ### Server-PWM System (SPS) 
 
